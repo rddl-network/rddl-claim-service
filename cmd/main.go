@@ -30,7 +30,7 @@ func startWebService(config *viper.Viper) {
 
 	bindAddress := config.GetString("service-bind")
 	servicePort := config.GetString("service-port")
-	router.Run(fmt.Sprintf("%s:%s", bindAddress, servicePort))
+	_ = router.Run(fmt.Sprintf("%s:%s", bindAddress, servicePort))
 }
 
 func main() {
