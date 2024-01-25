@@ -1,14 +1,11 @@
 package main
 
 import (
-	"fmt"
 	"log"
 
-	"github.com/gin-gonic/gin"
+	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/spf13/viper"
 )
-
-func postClaim(c *gin.Context) {}
 
 func loadConfig(path string) (v *viper.Viper, err error) {
 	v = viper.New()
@@ -24,20 +21,18 @@ func loadConfig(path string) (v *viper.Viper, err error) {
 	return
 }
 
-func startWebService(config *viper.Viper) {
-	router := gin.Default()
-	router.POST("/claim", postClaim)
-
-	bindAddress := config.GetString("service-bind")
-	servicePort := config.GetString("service-port")
-	_ = router.Run(fmt.Sprintf("%s:%s", bindAddress, servicePort))
-}
-
 func main() {
 	config, err := loadConfig("./")
 	if err != nil {
 		log.Fatalf("fatal error loading config file: %s", err)
 	}
 
-	startWebService(config)
+	db, err := service.InitDB(config)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	service := service.NewRDDLClaimService(db)
+
+	service.Run(config)
 }
