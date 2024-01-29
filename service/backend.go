@@ -47,6 +47,7 @@ func (rcs *RDDLClaimService) GetUnconfirmedClaim(id int) (claim RedeemClaim, err
 
 func (rcs *RDDLClaimService) GetAllUnconfirmedClaims() (claims []RedeemClaim, err error) {
 	iter := rcs.db.NewIterator(util.BytesPrefix([]byte(ClaimKeyPrefix)), nil)
+	defer iter.Release()
 	for iter.Next() {
 		var claim RedeemClaim
 		claimBytes := iter.Value()

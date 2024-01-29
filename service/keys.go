@@ -1,6 +1,8 @@
 package service
 
-import "fmt"
+import (
+	"encoding/binary"
+)
 
 const (
 	ClaimKeyPrefix          = "Claim/"
@@ -13,9 +15,26 @@ func KeyPrefix(p string) []byte {
 }
 
 func ClaimKey(id int) []byte {
-	return []byte(fmt.Sprintf("%s%d", ClaimKeyPrefix, id))
+	var key []byte
+
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, uint64(id))
+
+	prefixBytes := []byte(ClaimKeyPrefix)
+	key = append(key, prefixBytes...)
+	key = append(key, buf...)
+
+	return key
 }
 
 func ConfirmedClaimKey(id int) []byte {
-	return []byte(fmt.Sprintf("%s%d", ConfirmedClaimKeyPrefix, id))
+	var key []byte
+
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, uint64(id))
+
+	prefixBytes := []byte(ConfirmedClaimKeyPrefix)
+	key = append(key, prefixBytes...)
+	key = append(key, buf...)
+	return key
 }

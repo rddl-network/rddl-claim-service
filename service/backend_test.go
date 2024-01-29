@@ -2,6 +2,7 @@ package service_test
 
 import (
 	"encoding/json"
+	"fmt"
 	"testing"
 
 	"github.com/rddl-network/rddl-claim-service/service"
@@ -10,6 +11,50 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/storage"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
+
+func createNRedeemClaim(app *service.RDDLClaimService, n int) []service.RedeemClaim {
+	items := make([]service.RedeemClaim, n)
+	for i := range items {
+		items[i].Amount = "10000.00000000"
+		items[i].Beneficiary = fmt.Sprintf("liquidAddress%d", i)
+		items[i].LiquidTXHash = fmt.Sprintf("liquidTxHash%d", i)
+		id, _ := app.CreateUnconfirmedClaim(items[i])
+		items[i].Id = id
+	}
+	return items
+}
+
+func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB) {
+	db, err := leveldb.Open(storage.NewMemStorage(), nil)
+	if err != nil {
+		t.Fatal("Error opening in-memory LevelDB: ", err)
+	}
+
+	app = service.NewRDDLClaimService(db)
+	return
+}
+
+func TestGetUnconfirmedClaim(t *testing.T) {
+	app, db := setupService(t)
+	defer db.Close()
+
+	items := createNRedeemClaim(app, 10)
+	for _, item := range items {
+		rc, err := app.GetUnconfirmedClaim(item.Id)
+		assert.NoError(t, err)
+		assert.Equal(t, item, rc)
+	}
+}
+
+func TestGetAllUnconfirmedClaims(t *testing.T) {
+	app, db := setupService(t)
+	defer db.Close()
+
+	items := createNRedeemClaim(app, 20)
+	claims, err := app.GetAllUnconfirmedClaims()
+	assert.NoError(t, err)
+	assert.Equal(t, items, claims)
+}
 
 // TODO: implement test init and test all functions seperately
 func TestBackend(t *testing.T) {
