@@ -56,6 +56,36 @@ func TestGetAllUnconfirmedClaims(t *testing.T) {
 	assert.Equal(t, items, claims)
 }
 
+func TestDeleteUnconfirmedClaim(t *testing.T) {
+	app, db := setupService(t)
+	defer db.Close()
+
+	items := createNRedeemClaim(app, 1)
+	err := app.DeleteUnconfirmedClaim(items[0].Id)
+	assert.NoError(t, err)
+
+	_, err = app.GetUnconfirmedClaim(items[0].Id)
+	assert.Error(t, err)
+	assert.Equal(t, leveldb.ErrNotFound, err)
+}
+
+func TestConfirmClaim(t *testing.T) {
+	app, db := setupService(t)
+	defer db.Close()
+
+	items := createNRedeemClaim(app, 1)
+	err := app.ConfirmClaim(items[0].Id)
+	assert.NoError(t, err)
+
+	_, err = app.GetUnconfirmedClaim(items[0].Id)
+	assert.Error(t, err)
+	assert.Equal(t, leveldb.ErrNotFound, err)
+
+	rc, err := app.GetConfirmedClaim(items[0].Id)
+	assert.NoError(t, err)
+	assert.Equal(t, items[0], rc)
+}
+
 // TODO: implement test init and test all functions seperately
 func TestBackend(t *testing.T) {
 	memDB, err := leveldb.Open(storage.NewMemStorage(), nil)

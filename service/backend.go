@@ -105,3 +105,28 @@ func (rcs *RDDLClaimService) ConfirmClaim(id int) (err error) {
 
 	return rcs.db.Put(key, val, nil)
 }
+
+func (rcs *RDDLClaimService) GetConfirmedClaim(id int) (claim RedeemClaim, err error) {
+	key := ConfirmedClaimKey(id)
+	valBytes, err := rcs.db.Get(key, nil)
+	if err != nil {
+		return
+	}
+	err = json.Unmarshal(valBytes, &claim)
+	return
+}
+
+func (rcs *RDDLClaimService) GetAllConfirmedClaims() (claims []RedeemClaim, err error) {
+	iter := rcs.db.NewIterator(util.BytesPrefix([]byte(ConfirmedClaimKeyPrefix)), nil)
+	defer iter.Release()
+	for iter.Next() {
+		var claim RedeemClaim
+		claimBytes := iter.Value()
+		err = json.Unmarshal(claimBytes, &claim)
+		if err != nil {
+			return
+		}
+		claims = append(claims, claim)
+	}
+	return
+}

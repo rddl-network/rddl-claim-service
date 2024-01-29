@@ -27,6 +27,8 @@ func NewRDDLClaimService(db *leveldb.DB) *RDDLClaimService {
 }
 
 func (rcs *RDDLClaimService) Load() (claims []RedeemClaim, err error) {
+	claims, err = rcs.GetAllUnconfirmedClaims()
+
 	return
 }
 
