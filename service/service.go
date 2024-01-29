@@ -32,7 +32,3 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 		panic(err)
 	}
 }
-
-func (rcs *RDDLClaimService) registerRoutes() {
-	rcs.router.POST("/claim", rcs.postClaim)
-}

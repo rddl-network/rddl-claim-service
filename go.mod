@@ -4,6 +4,7 @@ go 1.21
 
 require (
 	github.com/gin-gonic/gin v1.9.1
+	github.com/rddl-network/elements-rpc v0.5.2
 	github.com/spf13/viper v1.18.2
 )
 
