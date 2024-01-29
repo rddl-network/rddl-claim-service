@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/viper"
 	"github.com/syndtr/goleveldb/leveldb"
+	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
 func InitDB(config *viper.Viper) (db *leveldb.DB, err error) {
@@ -44,7 +45,21 @@ func (rcs *RDDLClaimService) GetUnconfirmedClaim(id int) (claim RedeemClaim, err
 	return
 }
 
-func (rcs *RDDLClaimService) PutUnconfirmedClaim(rc RedeemClaim) (id int, err error) {
+func (rcs *RDDLClaimService) GetAllUnconfirmedClaims() (claims []RedeemClaim, err error) {
+	iter := rcs.db.NewIterator(util.BytesPrefix([]byte(ClaimKeyPrefix)), nil)
+	for iter.Next() {
+		var claim RedeemClaim
+		claimBytes := iter.Value()
+		err = json.Unmarshal(claimBytes, &claim)
+		if err != nil {
+			return
+		}
+		claims = append(claims, claim)
+	}
+	return
+}
+
+func (rcs *RDDLClaimService) CreateUnconfirmedClaim(rc RedeemClaim) (id int, err error) {
 	id, err = rcs.incrementCount()
 	if err != nil {
 		return

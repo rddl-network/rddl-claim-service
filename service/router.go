@@ -77,7 +77,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	}
 
 	// store claim
-	id, err := rcs.PutUnconfirmedClaim(rc)
+	id, err := rcs.CreateUnconfirmedClaim(rc)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to store claim"})
 		return

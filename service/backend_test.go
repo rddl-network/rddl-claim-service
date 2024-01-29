@@ -27,7 +27,7 @@ func TestBackend(t *testing.T) {
 		LiquidTXHash: "liquidTxHash",
 	}
 
-	id, err := app.PutUnconfirmedClaim(rc)
+	id, err := app.CreateUnconfirmedClaim(rc)
 	assert.NoError(t, err)
 
 	rc.Id = id
@@ -38,7 +38,7 @@ func TestBackend(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, string(rcBytes), string(valBytes))
 
-	id, err = app.PutUnconfirmedClaim(rc)
+	id, err = app.CreateUnconfirmedClaim(rc)
 	assert.NoError(t, err)
 
 	err = app.ConfirmClaim(id)
@@ -55,9 +55,9 @@ func TestBackend(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, string(rcBytes), string(valBytes))
 
-	app.PutUnconfirmedClaim(rc)
-	app.PutUnconfirmedClaim(rc)
-	app.PutUnconfirmedClaim(rc)
+	app.CreateUnconfirmedClaim(rc)
+	app.CreateUnconfirmedClaim(rc)
+	app.CreateUnconfirmedClaim(rc)
 	claims := make([]string, 0)
 
 	iter := memDB.NewIterator(util.BytesPrefix([]byte(service.ClaimKeyPrefix)), nil)
