@@ -52,7 +52,11 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 	go pollConfirmations(rcs.dataChannel)
 	for {
 		claim := <-rcs.dataChannel
-		rcs.ConfirmClaim(claim.Id)
+		err := rcs.ConfirmClaim(claim.Id)
+		if err != nil {
+			log.Println("error while persisting claim confirmation: ", err)
+			continue
+		}
 		delete(rcs.queue, claim.LiquidTXHash)
 	}
 }
@@ -67,7 +71,7 @@ func pollConfirmations(c chan RedeemClaim) {
 		for _, rc := range claims {
 			confirmations, err := getTxConfirmations(rc.LiquidTXHash)
 			if err != nil {
-				// log err
+				log.Println("error while fetching tx confirmations: ", err)
 			}
 			if confirmations >= cfg.Confirmations {
 				c <- rc
