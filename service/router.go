@@ -1,6 +1,7 @@
 package service
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -29,7 +30,7 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 	}
 
 	rc, err := rcs.GetUnconfirmedClaim(id)
-	if err == leveldb.ErrNotFound {
+	if errors.Is(err, leveldb.ErrNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("no claim found for id %d", id)})
 	}
 

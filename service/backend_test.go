@@ -17,7 +17,7 @@ func createNRedeemClaim(app *service.RDDLClaimService, n int) []service.RedeemCl
 		items[i].Beneficiary = fmt.Sprintf("liquidAddress%d", i)
 		items[i].LiquidTXHash = fmt.Sprintf("liquidTxHash%d", i)
 		id, _ := app.CreateUnconfirmedClaim(items[i])
-		items[i].Id = id
+		items[i].ID = id
 	}
 	return items
 }
@@ -33,18 +33,20 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB) 
 }
 
 func TestGetUnconfirmedClaim(t *testing.T) {
+	t.Parallel()
 	app, db := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 10)
 	for _, item := range items {
-		rc, err := app.GetUnconfirmedClaim(item.Id)
+		rc, err := app.GetUnconfirmedClaim(item.ID)
 		assert.NoError(t, err)
 		assert.Equal(t, item, rc)
 	}
 }
 
 func TestGetAllUnconfirmedClaims(t *testing.T) {
+	t.Parallel()
 	app, db := setupService(t)
 	defer db.Close()
 
@@ -55,42 +57,45 @@ func TestGetAllUnconfirmedClaims(t *testing.T) {
 }
 
 func TestDeleteUnconfirmedClaim(t *testing.T) {
+	t.Parallel()
 	app, db := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 1)
-	err := app.DeleteUnconfirmedClaim(items[0].Id)
+	err := app.DeleteUnconfirmedClaim(items[0].ID)
 	assert.NoError(t, err)
 
-	_, err = app.GetUnconfirmedClaim(items[0].Id)
+	_, err = app.GetUnconfirmedClaim(items[0].ID)
 	assert.Error(t, err)
 	assert.Equal(t, leveldb.ErrNotFound, err)
 }
 
 func TestConfirmClaim(t *testing.T) {
+	t.Parallel()
 	app, db := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 1)
-	err := app.ConfirmClaim(items[0].Id)
+	err := app.ConfirmClaim(items[0].ID)
 	assert.NoError(t, err)
 
-	_, err = app.GetUnconfirmedClaim(items[0].Id)
+	_, err = app.GetUnconfirmedClaim(items[0].ID)
 	assert.Error(t, err)
 	assert.Equal(t, leveldb.ErrNotFound, err)
 
-	rc, err := app.GetConfirmedClaim(items[0].Id)
+	rc, err := app.GetConfirmedClaim(items[0].ID)
 	assert.NoError(t, err)
 	assert.Equal(t, items[0], rc)
 }
 
 func TestGetAllConfirmedClaims(t *testing.T) {
+	t.Parallel()
 	app, db := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 10)
 	for _, item := range items {
-		err := app.ConfirmClaim(item.Id)
+		err := app.ConfirmClaim(item.ID)
 		assert.NoError(t, err)
 	}
 

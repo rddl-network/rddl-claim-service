@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"errors"
 	"strconv"
 
 	"github.com/spf13/viper"
@@ -16,7 +17,7 @@ func InitDB(config *viper.Viper) (db *leveldb.DB, err error) {
 
 func (rcs *RDDLClaimService) incrementCount() (count int, err error) {
 	countBytes, err := rcs.db.Get(KeyPrefix(CountKey), nil)
-	if err != nil && err != leveldb.ErrNotFound {
+	if err != nil && !errors.Is(err, leveldb.ErrNotFound) {
 		return 0, err
 	}
 
@@ -27,10 +28,13 @@ func (rcs *RDDLClaimService) incrementCount() (count int, err error) {
 		if err != nil {
 			return 0, err
 		}
-		count = count + 1
+		count++
 	}
 
-	rcs.db.Put(KeyPrefix(CountKey), []byte(strconv.Itoa(count)), nil)
+	err = rcs.db.Put(KeyPrefix(CountKey), []byte(strconv.Itoa(count)), nil)
+	if err != nil {
+		return 0, err
+	}
 
 	return count, nil
 }
@@ -66,7 +70,7 @@ func (rcs *RDDLClaimService) CreateUnconfirmedClaim(rc RedeemClaim) (id int, err
 		return
 	}
 
-	rc.Id = id
+	rc.ID = id
 
 	key := ClaimKey(id)
 	val, err := json.Marshal(rc)

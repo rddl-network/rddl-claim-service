@@ -46,13 +46,12 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 	err := rcs.router.Run(fmt.Sprintf("%s:%s", bindAddress, servicePort))
 	if err != nil {
 		log.Fatalf("fatal error starting router: %s", err)
-		panic(err)
 	}
 
 	go pollConfirmations(rcs.dataChannel)
 	for {
 		claim := <-rcs.dataChannel
-		err := rcs.ConfirmClaim(claim.Id)
+		err := rcs.ConfirmClaim(claim.ID)
 		if err != nil {
 			log.Println("error while persisting claim confirmation: ", err)
 			continue
