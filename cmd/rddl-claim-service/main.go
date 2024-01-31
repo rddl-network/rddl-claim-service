@@ -41,6 +41,6 @@ func main() {
 	service.Run(config)
 	err = service.Load()
 	if err != nil {
-		log.Fatalf("fatal error loading claims: %s", err)
+		log.Panicf("error loading claims: %s", err)
 	}
 }

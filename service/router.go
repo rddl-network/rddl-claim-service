@@ -13,8 +13,8 @@ import (
 )
 
 type ClaimRequestBody struct {
-	Beneficiary string `json:"beneficiary"`
-	Amount      string `json:"amount"`
+	Beneficiary string `binding:"required" json:"beneficiary"`
+	Amount      string `binding:"required" json:"amount"`
 }
 
 func (rcs *RDDLClaimService) registerRoutes() {
@@ -85,5 +85,5 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id})
+	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": hex})
 }

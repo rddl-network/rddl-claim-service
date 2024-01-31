@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	elements "github.com/rddl-network/elements-rpc"
+	elementsmocks "github.com/rddl-network/elements-rpc/utils/mocks"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -29,6 +31,8 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, 
 		t.Fatal("Error opening in-memory LevelDB: ", err)
 	}
 	router = gin.Default()
+
+	elements.Client = &elementsmocks.MockClient{}
 
 	app = service.NewRDDLClaimService(db, router)
 	return
