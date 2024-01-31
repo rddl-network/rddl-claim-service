@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/gin-gonic/gin"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/spf13/viper"
 )
@@ -33,7 +34,9 @@ func main() {
 	}
 	defer db.Close()
 
-	service := service.NewRDDLClaimService(db)
+	router := gin.Default()
+
+	service := service.NewRDDLClaimService(db, router)
 
 	service.Run(config)
 	err = service.Load()

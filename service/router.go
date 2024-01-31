@@ -32,6 +32,7 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 	rc, err := rcs.GetUnconfirmedClaim(id)
 	if errors.Is(err, leveldb.ErrNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("no claim found for id %d", id)})
+		return
 	}
 
 	if err != nil {

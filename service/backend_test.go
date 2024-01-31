@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"testing"
 
+	"github.com/gin-gonic/gin"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -22,19 +23,20 @@ func createNRedeemClaim(app *service.RDDLClaimService, n int) []service.RedeemCl
 	return items
 }
 
-func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB) {
+func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, router *gin.Engine) {
 	db, err := leveldb.Open(storage.NewMemStorage(), nil)
 	if err != nil {
 		t.Fatal("Error opening in-memory LevelDB: ", err)
 	}
+	router = gin.Default()
 
-	app = service.NewRDDLClaimService(db)
+	app = service.NewRDDLClaimService(db, router)
 	return
 }
 
 func TestGetUnconfirmedClaim(t *testing.T) {
 	t.Parallel()
-	app, db := setupService(t)
+	app, db, _ := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 10)
@@ -47,7 +49,7 @@ func TestGetUnconfirmedClaim(t *testing.T) {
 
 func TestGetAllUnconfirmedClaims(t *testing.T) {
 	t.Parallel()
-	app, db := setupService(t)
+	app, db, _ := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 20)
@@ -58,7 +60,7 @@ func TestGetAllUnconfirmedClaims(t *testing.T) {
 
 func TestDeleteUnconfirmedClaim(t *testing.T) {
 	t.Parallel()
-	app, db := setupService(t)
+	app, db, _ := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 1)
@@ -72,7 +74,7 @@ func TestDeleteUnconfirmedClaim(t *testing.T) {
 
 func TestConfirmClaim(t *testing.T) {
 	t.Parallel()
-	app, db := setupService(t)
+	app, db, _ := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 1)
@@ -90,7 +92,7 @@ func TestConfirmClaim(t *testing.T) {
 
 func TestGetAllConfirmedClaims(t *testing.T) {
 	t.Parallel()
-	app, db := setupService(t)
+	app, db, _ := setupService(t)
 	defer db.Close()
 
 	items := createNRedeemClaim(app, 10)

@@ -20,10 +20,10 @@ type RDDLClaimService struct {
 	dataChannel chan RedeemClaim
 }
 
-func NewRDDLClaimService(db *leveldb.DB) *RDDLClaimService {
+func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
 	service := &RDDLClaimService{
 		db:          db,
-		router:      gin.Default(),
+		router:      router,
 		queue:       make(map[string]RedeemClaim),
 		dataChannel: make(chan RedeemClaim),
 	}
