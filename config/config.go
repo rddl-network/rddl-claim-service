@@ -46,7 +46,7 @@ func DefaultConfig() *Config {
 		RPCUser:           "user",
 		RPCPass:           "password",
 		Asset:             "7add40beb27df701e02ee85089c5bc0021bc813823fedb5f1dcb5debda7f3da9",
-		Wallet:            "rddl2plmnt",
+		Wallet:            "pop",
 		Confirmations:     10,
 		WaitPeriod:        10,
 		PlanetmintAddress: "plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5",
