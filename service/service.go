@@ -19,7 +19,6 @@ import (
 type RDDLClaimService struct {
 	db          *leveldb.DB
 	router      *gin.Engine
-	queue       map[string]RedeemClaim
 	receiveChan chan RedeemClaim
 	confirmChan chan RedeemClaim
 }
@@ -28,7 +27,6 @@ func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
 	service := &RDDLClaimService{
 		db:          db,
 		router:      router,
-		queue:       make(map[string]RedeemClaim),
 		receiveChan: make(chan RedeemClaim),
 		confirmChan: make(chan RedeemClaim),
 	}
@@ -39,7 +37,6 @@ func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
 func (rcs *RDDLClaimService) Load() (err error) {
 	claims, err := rcs.GetAllUnconfirmedClaims()
 	for _, claim := range claims {
-		rcs.queue[claim.LiquidTXHash] = claim
 		rcs.receiveChan <- claim
 	}
 	return
@@ -66,7 +63,6 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 			log.Println("error while persisting claim confirmation: ", err)
 			continue
 		}
-		delete(rcs.queue, claim.LiquidTXHash)
 	}
 }
 
