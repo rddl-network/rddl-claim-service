@@ -56,7 +56,12 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 	go pollConfirmations(rcs.receiveChan, rcs.confirmChan)
 	for {
 		claim := <-rcs.confirmChan
-		err := rcs.ConfirmClaim(claim.ID)
+		err := sendConfirmation(config, claim.ClaimID, claim.Beneficiary)
+		if err != nil {
+			log.Println("error while sending claim confirmation: ", err)
+			continue
+		}
+		err = rcs.ConfirmClaim(claim.ID)
 		if err != nil {
 			log.Println("error while persisting claim confirmation: ", err)
 			continue
@@ -65,10 +70,10 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 	}
 }
 
-func sendConfirmation(cfg *viper.Viper, beneficiary string) (err error) {
+func sendConfirmation(cfg *viper.Viper, claimID int, beneficiary string) (err error) {
 	addressString := cfg.GetString("planetmint-address")
 	addr := sdk.MustAccAddressFromBech32(addressString)
-	msg := daotypes.NewMsgConfirmRedeemClaim(addressString, 0, beneficiary)
+	msg := daotypes.NewMsgConfirmRedeemClaim(addressString, uint64(claimID), beneficiary)
 
 	_, err = planetmint.BroadcastTxWithFileLock(addr, msg)
 	return

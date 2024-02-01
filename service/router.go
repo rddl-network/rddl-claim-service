@@ -15,6 +15,7 @@ import (
 type ClaimRequestBody struct {
 	Beneficiary string `binding:"required" json:"beneficiary"`
 	Amount      string `binding:"required" json:"amount"`
+	ClaimID     int    `binding:"required" json:"claim-id"`
 }
 
 func (rcs *RDDLClaimService) registerRoutes() {
@@ -76,6 +77,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 		Beneficiary:  requestBody.Beneficiary,
 		Amount:       requestBody.Amount,
 		LiquidTXHash: hex,
+		ClaimID:      requestBody.ClaimID,
 	}
 
 	// store claim

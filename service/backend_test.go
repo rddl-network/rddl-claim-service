@@ -19,6 +19,7 @@ func createNRedeemClaim(app *service.RDDLClaimService, n int) []service.RedeemCl
 		items[i].Amount = "10000.00000000"
 		items[i].Beneficiary = fmt.Sprintf("liquidAddress%d", i)
 		items[i].LiquidTXHash = fmt.Sprintf("liquidTxHash%d", i)
+		items[i].ClaimID = i
 		id, _ := app.CreateUnconfirmedClaim(items[i])
 		items[i].ID = id
 	}

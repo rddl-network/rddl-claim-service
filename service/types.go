@@ -5,4 +5,5 @@ type RedeemClaim struct {
 	Beneficiary  string `json:"beneficiary"`
 	Amount       string `json:"amount"`
 	LiquidTXHash string `json:"liquid-tx-hash"`
+	ClaimID      int    `json:"claim-id"`
 }

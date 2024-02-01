@@ -81,6 +81,7 @@ func TestPostClaimRoute(t *testing.T) {
 			reqBody: service.ClaimRequestBody{
 				Beneficiary: "liquid-address",
 				Amount:      "10000.00000",
+				ClaimID:     1,
 			},
 			resBody: "{\"hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"id\":1,\"message\":\"claim enqueued\"}",
 			code:    200,
@@ -88,7 +89,7 @@ func TestPostClaimRoute(t *testing.T) {
 		{
 			name:    "invalid request",
 			reqBody: service.ClaimRequestBody{},
-			resBody: "{\"error\":\"Key: 'ClaimRequestBody.Beneficiary' Error:Field validation for 'Beneficiary' failed on the 'required' tag\\nKey: 'ClaimRequestBody.Amount' Error:Field validation for 'Amount' failed on the 'required' tag\"}",
+			resBody: "{\"error\":\"Key: 'ClaimRequestBody.Beneficiary' Error:Field validation for 'Beneficiary' failed on the 'required' tag\\nKey: 'ClaimRequestBody.Amount' Error:Field validation for 'Amount' failed on the 'required' tag\\nKey: 'ClaimRequestBody.ClaimID' Error:Field validation for 'ClaimID' failed on the 'required' tag\"}",
 			code:    400,
 		},
 	}
