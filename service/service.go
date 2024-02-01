@@ -5,7 +5,10 @@ import (
 	"log"
 	"time"
 
+	sdk "github.com/cosmos/cosmos-sdk/types"
 	"github.com/gin-gonic/gin"
+	planetmint "github.com/planetmint/planetmint-go/lib"
+	daotypes "github.com/planetmint/planetmint-go/x/dao/types"
 	"github.com/rddl-network/rddl-claim-service/config"
 	"github.com/spf13/viper"
 	"github.com/syndtr/goleveldb/leveldb"
@@ -17,7 +20,8 @@ type RDDLClaimService struct {
 	db          *leveldb.DB
 	router      *gin.Engine
 	queue       map[string]RedeemClaim
-	dataChannel chan RedeemClaim
+	receiveChan chan RedeemClaim
+	confirmChan chan RedeemClaim
 }
 
 func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
@@ -25,7 +29,8 @@ func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
 		db:          db,
 		router:      router,
 		queue:       make(map[string]RedeemClaim),
-		dataChannel: make(chan RedeemClaim),
+		receiveChan: make(chan RedeemClaim),
+		confirmChan: make(chan RedeemClaim),
 	}
 	service.registerRoutes()
 	return service
@@ -35,7 +40,7 @@ func (rcs *RDDLClaimService) Load() (err error) {
 	claims, err := rcs.GetAllUnconfirmedClaims()
 	for _, claim := range claims {
 		rcs.queue[claim.LiquidTXHash] = claim
-		rcs.dataChannel <- claim
+		rcs.receiveChan <- claim
 	}
 	return
 }
@@ -48,9 +53,9 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 		log.Fatalf("fatal error starting router: %s", err)
 	}
 
-	go pollConfirmations(rcs.dataChannel)
+	go pollConfirmations(rcs.receiveChan, rcs.confirmChan)
 	for {
-		claim := <-rcs.dataChannel
+		claim := <-rcs.confirmChan
 		err := rcs.ConfirmClaim(claim.ID)
 		if err != nil {
 			log.Println("error while persisting claim confirmation: ", err)
@@ -60,12 +65,21 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 	}
 }
 
-func pollConfirmations(c chan RedeemClaim) {
+func sendConfirmation(cfg *viper.Viper, beneficiary string) (err error) {
+	addressString := cfg.GetString("planetmint-address")
+	addr := sdk.MustAccAddressFromBech32(addressString)
+	msg := daotypes.NewMsgConfirmRedeemClaim(addressString, 0, beneficiary)
+
+	_, err = planetmint.BroadcastTxWithFileLock(addr, msg)
+	return
+}
+
+func pollConfirmations(receive chan RedeemClaim, confirm chan RedeemClaim) {
 	cfg := config.GetConfig()
-	claims := make([]RedeemClaim, 0)
+	claims := make(map[string]RedeemClaim)
 	for {
-		claim := <-c
-		claims = append(claims, claim)
+		claim := <-receive
+		claims[claim.LiquidTXHash] = claim
 
 		for _, rc := range claims {
 			confirmations, err := getTxConfirmations(rc.LiquidTXHash)
@@ -73,7 +87,8 @@ func pollConfirmations(c chan RedeemClaim) {
 				log.Println("error while fetching tx confirmations: ", err)
 			}
 			if confirmations >= cfg.Confirmations {
-				c <- rc
+				confirm <- rc
+				delete(claims, rc.LiquidTXHash)
 			}
 		}
 
