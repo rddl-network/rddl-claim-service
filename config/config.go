@@ -3,7 +3,7 @@ package config
 import "sync"
 
 const DefaultConfigTemplate = `
-service-bind="{{ .ServiceBind }}"
+service-host="{{ .ServiceHost }}"
 service-port={{ .ServicePort }}
 db-path="{{ .DBPath }}"
 rpc-host="{{ .RPCHost }}"
@@ -18,7 +18,7 @@ planetmint-address="{{ .PlanetmintAddress }}"
 
 type Config struct {
 	ServicePort       int    `mapstructure:"service-port"`
-	ServiceBind       string `mapstructure:"service-bind"`
+	ServiceHost       string `mapstructure:"service-host"`
 	DBPath            string `mapstructure:"db-path"`
 	RPCHost           string `mapstructure:"rpc-host"`
 	RPCUser           string `mapstructure:"rpc-user"`
@@ -40,7 +40,7 @@ var (
 func DefaultConfig() *Config {
 	return &Config{
 		ServicePort:       8080,
-		ServiceBind:       "localhost",
+		ServiceHost:       "localhost",
 		DBPath:            "./data",
 		RPCHost:           "planetmint-go-testnet-3.rddl.io:18884",
 		RPCUser:           "user",

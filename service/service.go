@@ -43,7 +43,7 @@ func (rcs *RDDLClaimService) Load() (err error) {
 }
 
 func (rcs *RDDLClaimService) Run(config *viper.Viper) {
-	bindAddress := config.GetString("service-bind")
+	bindAddress := config.GetString("service-host")
 	servicePort := config.GetString("service-port")
 	err := rcs.router.Run(fmt.Sprintf("%s:%s", bindAddress, servicePort))
 	if err != nil {
