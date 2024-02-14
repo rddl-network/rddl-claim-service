@@ -10,7 +10,6 @@ import (
 	planetmint "github.com/planetmint/planetmint-go/lib"
 	daotypes "github.com/planetmint/planetmint-go/x/dao/types"
 	"github.com/rddl-network/rddl-claim-service/config"
-	"github.com/spf13/viper"
 	"github.com/syndtr/goleveldb/leveldb"
 
 	elements "github.com/rddl-network/elements-rpc"
@@ -42,10 +41,10 @@ func (rcs *RDDLClaimService) Load() (err error) {
 	return
 }
 
-func (rcs *RDDLClaimService) Run(config *viper.Viper) {
-	bindAddress := config.GetString("service-host")
-	servicePort := config.GetString("service-port")
-	err := rcs.router.Run(fmt.Sprintf("%s:%s", bindAddress, servicePort))
+func (rcs *RDDLClaimService) Run(cfg *config.Config) {
+	bindAddress := cfg.ServiceHost
+	servicePort := cfg.ServicePort
+	err := rcs.router.Run(fmt.Sprintf("%s:%d", bindAddress, servicePort))
 	if err != nil {
 		log.Fatalf("fatal error starting router: %s", err)
 	}
@@ -53,7 +52,7 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 	go pollConfirmations(rcs.receiveChan, rcs.confirmChan)
 	for {
 		claim := <-rcs.confirmChan
-		err := sendConfirmation(config, claim.ClaimID, claim.Beneficiary)
+		err := sendConfirmation(cfg, claim.ClaimID, claim.Beneficiary)
 		if err != nil {
 			log.Println("error while sending claim confirmation: ", err)
 			continue
@@ -66,8 +65,8 @@ func (rcs *RDDLClaimService) Run(config *viper.Viper) {
 	}
 }
 
-func sendConfirmation(cfg *viper.Viper, claimID int, beneficiary string) (err error) {
-	addressString := cfg.GetString("planetmint-address")
+func sendConfirmation(cfg *config.Config, claimID int, beneficiary string) (err error) {
+	addressString := cfg.PlanetmintAddress
 	addr := sdk.MustAccAddressFromBech32(addressString)
 	msg := daotypes.NewMsgConfirmRedeemClaim(addressString, uint64(claimID), beneficiary)
 

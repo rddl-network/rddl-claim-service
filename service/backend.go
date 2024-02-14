@@ -5,14 +5,13 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/spf13/viper"
+	"github.com/rddl-network/rddl-claim-service/config"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
-func InitDB(config *viper.Viper) (db *leveldb.DB, err error) {
-	dbPath := config.GetString("db-path")
-	return leveldb.OpenFile(dbPath, nil)
+func InitDB(cfg *config.Config) (db *leveldb.DB, err error) {
+	return leveldb.OpenFile(cfg.DBPath, nil)
 }
 
 func (rcs *RDDLClaimService) incrementCount() (count int, err error) {
