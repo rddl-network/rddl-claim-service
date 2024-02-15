@@ -75,9 +75,11 @@ func main() {
 
 	service := service.NewRDDLClaimService(db, router)
 
-	service.Run(config)
 	err = service.Load()
 	if err != nil {
 		log.Panicf("error loading claims: %s", err)
+	}
+	if err = service.Run(config); err != nil {
+		log.Panicf("error starting router: %s", err)
 	}
 }

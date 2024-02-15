@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	sdk "github.com/cosmos/cosmos-sdk/types"
@@ -16,18 +17,23 @@ import (
 )
 
 type RDDLClaimService struct {
-	db          *leveldb.DB
-	router      *gin.Engine
-	receiveChan chan RedeemClaim
-	confirmChan chan RedeemClaim
+	db     *leveldb.DB
+	router *gin.Engine
+	claims SafeClaims
+}
+
+type SafeClaims struct {
+	mut  sync.Mutex
+	list []RedeemClaim
 }
 
 func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
 	service := &RDDLClaimService{
-		db:          db,
-		router:      router,
-		receiveChan: make(chan RedeemClaim),
-		confirmChan: make(chan RedeemClaim),
+		db:     db,
+		router: router,
+		claims: SafeClaims{
+			list: make([]RedeemClaim, 0),
+		},
 	}
 	service.registerRoutes()
 	return service
@@ -35,37 +41,19 @@ func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
 
 func (rcs *RDDLClaimService) Load() (err error) {
 	claims, err := rcs.GetAllUnconfirmedClaims()
-	for _, claim := range claims {
-		rcs.receiveChan <- claim
-	}
+	rcs.claims.mut.Lock()
+	rcs.claims.list = claims
+	rcs.claims.mut.Unlock()
 	return
 }
 
-func (rcs *RDDLClaimService) Run(cfg *config.Config) {
-	bindAddress := cfg.ServiceHost
-	servicePort := cfg.ServicePort
-	err := rcs.router.Run(fmt.Sprintf("%s:%d", bindAddress, servicePort))
-	if err != nil {
-		log.Fatalf("fatal error starting router: %s", err)
-	}
-
-	go pollConfirmations(rcs.receiveChan, rcs.confirmChan)
-	for {
-		claim := <-rcs.confirmChan
-		err := sendConfirmation(cfg, claim.ClaimID, claim.Beneficiary)
-		if err != nil {
-			log.Println("error while sending claim confirmation: ", err)
-			continue
-		}
-		err = rcs.ConfirmClaim(claim.ID)
-		if err != nil {
-			log.Println("error while persisting claim confirmation: ", err)
-			continue
-		}
-	}
+func (rcs *RDDLClaimService) Run(cfg *config.Config) error {
+	go rcs.pollConfirmations(cfg.WaitPeriod, cfg.Confirmations)
+	return rcs.router.Run(fmt.Sprintf("%s:%d", cfg.ServiceHost, cfg.ServicePort))
 }
 
-func sendConfirmation(cfg *config.Config, claimID int, beneficiary string) (err error) {
+func sendConfirmation(claimID int, beneficiary string) (err error) {
+	cfg := config.GetConfig()
 	addressString := cfg.PlanetmintAddress
 	addr := sdk.MustAccAddressFromBech32(addressString)
 	msg := daotypes.NewMsgConfirmRedeemClaim(addressString, uint64(claimID), beneficiary)
@@ -74,25 +62,30 @@ func sendConfirmation(cfg *config.Config, claimID int, beneficiary string) (err 
 	return
 }
 
-func pollConfirmations(receive chan RedeemClaim, confirm chan RedeemClaim) {
-	cfg := config.GetConfig()
-	claims := make(map[string]RedeemClaim)
-	for {
-		claim := <-receive
-		claims[claim.LiquidTXHash] = claim
+func (rcs *RDDLClaimService) pollConfirmations(waitPeriod int, confirmations int64) {
+	ticker := time.NewTicker(time.Duration(waitPeriod) * time.Second)
+	defer ticker.Stop()
 
-		for _, rc := range claims {
-			confirmations, err := getTxConfirmations(rc.LiquidTXHash)
+	for range ticker.C {
+		rcs.claims.mut.Lock()
+		for i, claim := range rcs.claims.list {
+			txConfirmations, err := getTxConfirmations(claim.LiquidTXHash)
 			if err != nil {
 				log.Println("error while fetching tx confirmations: ", err)
 			}
-			if confirmations >= cfg.Confirmations {
-				confirm <- rc
-				delete(claims, rc.LiquidTXHash)
+			if txConfirmations >= confirmations {
+				rcs.claims.list = append(rcs.claims.list[:i], rcs.claims.list[i+1:]...)
+				err := sendConfirmation(claim.ClaimID, claim.Beneficiary)
+				if err != nil {
+					log.Println("error while sending claim confirmation: ", err)
+				}
+				err = rcs.ConfirmClaim(claim.ID)
+				if err != nil {
+					log.Println("error while persisting claim confirmation: ", err)
+				}
 			}
 		}
-
-		time.Sleep(time.Duration(cfg.WaitPeriod) * time.Second)
+		rcs.claims.mut.Unlock()
 	}
 }
 

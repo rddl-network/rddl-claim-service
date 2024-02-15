@@ -87,5 +87,9 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 		return
 	}
 
+	rcs.claims.mut.Lock()
+	rcs.claims.list = append(rcs.claims.list, rc)
+	rcs.claims.mut.Unlock()
+
 	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": hex})
 }
