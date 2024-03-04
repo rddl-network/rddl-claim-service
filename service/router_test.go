@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -54,7 +53,7 @@ func TestGetClaimRoute(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			t.Parallel()
 			w := httptest.NewRecorder()
-			req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, fmt.Sprintf("/claim/%s", tc.id), nil)
+			req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/claim/"+tc.id, nil)
 			router.ServeHTTP(w, req)
 			assert.Equal(t, tc.code, w.Code)
 			if tc.err {
