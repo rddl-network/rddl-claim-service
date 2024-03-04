@@ -40,7 +40,6 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, 
 }
 
 func TestGetUnconfirmedClaim(t *testing.T) {
-	t.Parallel()
 	app, db, _ := setupService(t)
 	defer db.Close()
 
@@ -53,7 +52,6 @@ func TestGetUnconfirmedClaim(t *testing.T) {
 }
 
 func TestGetAllUnconfirmedClaims(t *testing.T) {
-	t.Parallel()
 	app, db, _ := setupService(t)
 	defer db.Close()
 
@@ -64,7 +62,6 @@ func TestGetAllUnconfirmedClaims(t *testing.T) {
 }
 
 func TestDeleteUnconfirmedClaim(t *testing.T) {
-	t.Parallel()
 	app, db, _ := setupService(t)
 	defer db.Close()
 
@@ -78,7 +75,6 @@ func TestDeleteUnconfirmedClaim(t *testing.T) {
 }
 
 func TestConfirmClaim(t *testing.T) {
-	t.Parallel()
 	app, db, _ := setupService(t)
 	defer db.Close()
 
@@ -96,7 +92,6 @@ func TestConfirmClaim(t *testing.T) {
 }
 
 func TestGetAllConfirmedClaims(t *testing.T) {
-	t.Parallel()
 	app, db, _ := setupService(t)
 	defer db.Close()
 

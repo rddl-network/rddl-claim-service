@@ -13,7 +13,6 @@ import (
 )
 
 func TestGetClaimRoute(t *testing.T) {
-	t.Parallel()
 	app, _, router := setupService(t)
 
 	items := createNRedeemClaim(app, 1)
@@ -51,7 +50,6 @@ func TestGetClaimRoute(t *testing.T) {
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/claim/"+tc.id, nil)
 			router.ServeHTTP(w, req)
@@ -66,7 +64,6 @@ func TestGetClaimRoute(t *testing.T) {
 }
 
 func TestPostClaimRoute(t *testing.T) {
-	t.Parallel()
 	_, _, router := setupService(t)
 
 	tests := []struct {
@@ -95,7 +92,6 @@ func TestPostClaimRoute(t *testing.T) {
 	for _, tc := range tests {
 		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
-			t.Parallel()
 			w := httptest.NewRecorder()
 			bodyBytes, err := json.Marshal(tc.reqBody)
 			assert.NoError(t, err)
