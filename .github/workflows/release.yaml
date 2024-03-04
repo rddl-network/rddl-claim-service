@@ -19,7 +19,7 @@ on:
       files:
         description: "Files"
         required: true
-        default: "rddl-2-plmnt-service"
+        default: "rddl-claim-service"
 
 jobs:
   release:
