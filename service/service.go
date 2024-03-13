@@ -20,6 +20,7 @@ type RDDLClaimService struct {
 	db     *leveldb.DB
 	router *gin.Engine
 	claims SafeClaims
+	shamir IShamirClient
 }
 
 type SafeClaims struct {
@@ -27,13 +28,14 @@ type SafeClaims struct {
 	list []RedeemClaim
 }
 
-func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine) *RDDLClaimService {
+func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir IShamirClient) *RDDLClaimService {
 	service := &RDDLClaimService{
 		db:     db,
 		router: router,
 		claims: SafeClaims{
 			list: make([]RedeemClaim, 0),
 		},
+		shamir: shamir,
 	}
 	service.registerRoutes()
 	return service

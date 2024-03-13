@@ -5,9 +5,11 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang/mock/gomock"
 	elements "github.com/rddl-network/elements-rpc"
 	elementsmocks "github.com/rddl-network/elements-rpc/utils/mocks"
 	"github.com/rddl-network/rddl-claim-service/service"
+	"github.com/rddl-network/rddl-claim-service/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/storage"
@@ -33,9 +35,13 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, 
 	}
 	router = gin.Default()
 
+	ctrl := gomock.NewController(t)
+	shamirMock := testutil.NewMockIShamirClient(ctrl)
+	shamirMock.EXPECT().IssueTransaction(gomock.Any(), gomock.Any()).AnyTimes().Return("0000000000000000000000000000000000000000000000000000000000000000", nil)
+
 	elements.Client = &elementsmocks.MockClient{}
 
-	app = service.NewRDDLClaimService(db, router)
+	app = service.NewRDDLClaimService(db, router, shamirMock)
 	return
 }
 
