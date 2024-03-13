@@ -14,6 +14,7 @@ wallet="{{ .Wallet }}"
 confirmations={{ .Confirmations }}
 wait-period={{ .WaitPeriod }}
 planetmint-address="{{ .PlanetmintAddress }}"
+shamir-host="{{ .ShamirHost }}"
 `
 
 type Config struct {
@@ -28,6 +29,7 @@ type Config struct {
 	Confirmations     int64  `mapstructure:"confirmations"`
 	WaitPeriod        int    `mapstructure:"wait-period"`
 	PlanetmintAddress string `mapstructure:"planetmint-address"`
+	ShamirHost        string
 }
 
 // global singleton
@@ -50,6 +52,7 @@ func DefaultConfig() *Config {
 		Confirmations:     10,
 		WaitPeriod:        10,
 		PlanetmintAddress: "plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5",
+		ShamirHost:        "localhost:9091",
 	}
 }
 

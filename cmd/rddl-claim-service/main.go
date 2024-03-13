@@ -32,6 +32,7 @@ func loadConfig(path string) (cfg *config.Config, err error) {
 		cfg.Confirmations = v.GetInt64("confirmations")
 		cfg.WaitPeriod = v.GetInt("wait-period")
 		cfg.PlanetmintAddress = v.GetString("planetmint-address")
+		cfg.ShamirHost = v.GetString("shamir-host")
 		return
 	}
 	log.Println("no config file found")
@@ -73,7 +74,8 @@ func main() {
 
 	router := gin.Default()
 
-	service := service.NewRDDLClaimService(db, router)
+	shamir := service.NewShamirClient(config.ShamirHost)
+	service := service.NewRDDLClaimService(db, router, shamir)
 
 	err = service.Load()
 	if err != nil {

@@ -7,8 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	elements "github.com/rddl-network/elements-rpc"
-	"github.com/rddl-network/rddl-claim-service/config"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -45,29 +43,13 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
-	cfg := config.GetConfig()
-
 	var requestBody ClaimRequestBody
 	if err := c.BindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	// send tx to liquid
-	url := fmt.Sprintf("http://%s:%s@%s/wallet/%s", cfg.RPCUser, cfg.RPCPass, cfg.RPCHost, cfg.Wallet)
-	hex, err := elements.SendToAddress(url, []string{
-		requestBody.Beneficiary,
-		requestBody.Amount,
-		`""`,
-		`""`,
-		"false",
-		"true",
-		"null",
-		`"unset"`,
-		"false",
-		`"` + cfg.Asset + `"`,
-	})
-
+	hash, err := rcs.shamir.IssueTransaction(requestBody.Amount, requestBody.Beneficiary)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send tx"})
 		return
@@ -76,7 +58,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rc := RedeemClaim{
 		Beneficiary:  requestBody.Beneficiary,
 		Amount:       requestBody.Amount,
-		LiquidTXHash: hex,
+		LiquidTXHash: hash,
 		ClaimID:      requestBody.ClaimID,
 	}
 
@@ -91,5 +73,5 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rcs.claims.list = append(rcs.claims.list, rc)
 	rcs.claims.mut.Unlock()
 
-	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": hex})
+	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": hash})
 }

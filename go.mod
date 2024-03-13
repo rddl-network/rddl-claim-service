@@ -5,6 +5,7 @@ go 1.21
 require (
 	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/gin-gonic/gin v1.9.1
+	github.com/golang/mock v1.6.0
 	github.com/planetmint/planetmint-go v0.7.5-0.20240201092338-373614e1b27d
 	github.com/planetmint/planetmint-go/lib v0.4.1
 	github.com/rddl-network/elements-rpc v0.5.2
