@@ -50,11 +50,14 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 		return
 	}
 
+	rcs.logger.Info("msg", "received claim request", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
+
 	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, requestBody.Amount)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send tx"})
 		return
 	}
+	rcs.logger.Info("msg", "tokens sent", "TxID", res.TxID)
 
 	rc := RedeemClaim{
 		Beneficiary:  requestBody.Beneficiary,

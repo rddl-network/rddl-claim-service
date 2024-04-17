@@ -57,14 +57,18 @@ func (rcs *RDDLClaimService) Run(cfg *config.Config) error {
 	return rcs.router.Run(fmt.Sprintf("%s:%d", cfg.ServiceHost, cfg.ServicePort))
 }
 
-func sendConfirmation(claimID int, beneficiary string) (err error) {
+func sendConfirmation(claimID int, beneficiary string) (txResponse sdk.TxResponse, err error) {
 	cfg := config.GetConfig()
 	addressString := cfg.PlanetmintAddress
 	addr := sdk.MustAccAddressFromBech32(addressString)
 	msg := daotypes.NewMsgConfirmRedeemClaim(addressString, uint64(claimID), beneficiary)
 
-	_, err = planetmint.BroadcastTxWithFileLock(addr, msg)
-	return
+	out, err := planetmint.BroadcastTxWithFileLock(addr, msg)
+	if err != nil {
+		return
+	}
+
+	return planetmint.GetTxResponseFromOut(out)
 }
 
 func (rcs *RDDLClaimService) pollConfirmations(waitPeriod int, confirmations int64) {
@@ -78,9 +82,11 @@ func (rcs *RDDLClaimService) pollConfirmations(waitPeriod int, confirmations int
 			if err != nil {
 				rcs.logger.Error("msg", "error while fetching tx confirmations: "+err.Error())
 			}
+			rcs.logger.Debug("msg", "fetchted liquid confirmations", "TxID", claim.LiquidTXHash, "confirmations", txConfirmations)
 			if txConfirmations >= confirmations {
+				rcs.logger.Info("msg", "sufficient confirmations reached, removing from polling list", "TxID", claim.LiquidTXHash)
 				rcs.claims.list = append(rcs.claims.list[:i], rcs.claims.list[i+1:]...)
-				err := sendConfirmation(claim.ClaimID, claim.Beneficiary)
+				txResponse, err := sendConfirmation(claim.ClaimID, claim.Beneficiary)
 				if err != nil {
 					rcs.logger.Error("msg", "error while sending claim confirmation: "+err.Error())
 				}
@@ -88,6 +94,7 @@ func (rcs *RDDLClaimService) pollConfirmations(waitPeriod int, confirmations int
 				if err != nil {
 					rcs.logger.Error("msg", "error while persisting claim confirmation: "+err.Error())
 				}
+				rcs.logger.Info("msg", "claim confirmation sent to Planetmint", "txResponse", txResponse.String())
 			}
 		}
 		rcs.claims.mut.Unlock()
