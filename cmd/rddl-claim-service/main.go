@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"html/template"
 	stdlog "log"
+	"net/http"
 	"os"
 
 	log "github.com/rddl-network/go-logger"
+	"github.com/rddl-network/shamir-coordinator-service/client"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rddl-network/rddl-claim-service/config"
@@ -78,7 +80,7 @@ func main() {
 	router := gin.Default()
 
 	logger := log.GetLogger(config.LogLevel)
-	shamir := service.NewShamirClient(config.ShamirHost)
+	shamir := client.NewShamirCoordinatorClient(config.ShamirHost, &http.Client{})
 	service := service.NewRDDLClaimService(db, router, shamir, logger)
 
 	err = service.Load()

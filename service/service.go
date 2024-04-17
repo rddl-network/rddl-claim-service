@@ -10,6 +10,7 @@ import (
 	planetmint "github.com/planetmint/planetmint-go/lib"
 	daotypes "github.com/planetmint/planetmint-go/x/dao/types"
 	"github.com/rddl-network/rddl-claim-service/config"
+	"github.com/rddl-network/shamir-coordinator-service/client"
 	"github.com/syndtr/goleveldb/leveldb"
 
 	elements "github.com/rddl-network/elements-rpc"
@@ -20,7 +21,7 @@ type RDDLClaimService struct {
 	db     *leveldb.DB
 	router *gin.Engine
 	claims SafeClaims
-	shamir IShamirClient
+	shamir client.IShamirCoordinatorClient
 	logger log.AppLogger
 }
 
@@ -29,7 +30,7 @@ type SafeClaims struct {
 	list []RedeemClaim
 }
 
-func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir IShamirClient, logger log.AppLogger) *RDDLClaimService {
+func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir client.IShamirCoordinatorClient, logger log.AppLogger) *RDDLClaimService {
 	service := &RDDLClaimService{
 		db:     db,
 		router: router,

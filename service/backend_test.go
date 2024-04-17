@@ -11,6 +11,7 @@ import (
 	log "github.com/rddl-network/go-logger"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/rddl-network/rddl-claim-service/testutil"
+	shamir "github.com/rddl-network/shamir-coordinator-service/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/storage"
@@ -37,8 +38,10 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, 
 	router = gin.Default()
 
 	ctrl := gomock.NewController(t)
-	shamirMock := testutil.NewMockIShamirClient(ctrl)
-	shamirMock.EXPECT().IssueTransaction(gomock.Any(), gomock.Any()).AnyTimes().Return("0000000000000000000000000000000000000000000000000000000000000000", nil)
+	shamirMock := testutil.NewMockIShamirCoordinatorClient(ctrl)
+
+	mockRes := shamir.SendTokensResponse{TxID: "0000000000000000000000000000000000000000000000000000000000000000"}
+	shamirMock.EXPECT().SendTokens(gomock.Any(), gomock.Any(), gomock.Any()).AnyTimes().Return(mockRes, nil)
 
 	elements.Client = &elementsmocks.MockClient{}
 	logger := log.GetLogger(log.DEBUG)
