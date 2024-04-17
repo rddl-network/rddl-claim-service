@@ -1,6 +1,10 @@
 package config
 
-import "sync"
+import (
+	"sync"
+
+	log "github.com/rddl-network/go-logger"
+)
 
 const DefaultConfigTemplate = `
 service-host="{{ .ServiceHost }}"
@@ -15,6 +19,7 @@ confirmations={{ .Confirmations }}
 wait-period={{ .WaitPeriod }}
 planetmint-address="{{ .PlanetmintAddress }}"
 shamir-host="{{ .ShamirHost }}"
+log-level="{{ .LogLevel }}"
 `
 
 type Config struct {
@@ -29,7 +34,8 @@ type Config struct {
 	Confirmations     int64  `mapstructure:"confirmations"`
 	WaitPeriod        int    `mapstructure:"wait-period"`
 	PlanetmintAddress string `mapstructure:"planetmint-address"`
-	ShamirHost        string
+	ShamirHost        string `mapstructure:"shamir-host"`
+	LogLevel          string `mapstructure:"log-level"`
 }
 
 // global singleton
@@ -53,6 +59,7 @@ func DefaultConfig() *Config {
 		WaitPeriod:        10,
 		PlanetmintAddress: "plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5",
 		ShamirHost:        "localhost:9091",
+		LogLevel:          log.DEBUG,
 	}
 }
 

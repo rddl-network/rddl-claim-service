@@ -1,6 +1,6 @@
 module github.com/rddl-network/rddl-claim-service
 
-go 1.21
+go 1.21.5
 
 require (
 	github.com/cosmos/cosmos-sdk v0.47.5
@@ -9,6 +9,7 @@ require (
 	github.com/planetmint/planetmint-go v0.7.5-0.20240201092338-373614e1b27d
 	github.com/planetmint/planetmint-go/lib v0.4.1
 	github.com/rddl-network/elements-rpc v0.5.2
+	github.com/rddl-network/go-logger v0.0.2
 	github.com/spf13/viper v1.18.2
 	github.com/stretchr/testify v1.8.4
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d

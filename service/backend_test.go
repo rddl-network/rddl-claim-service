@@ -8,6 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 	elements "github.com/rddl-network/elements-rpc"
 	elementsmocks "github.com/rddl-network/elements-rpc/utils/mocks"
+	log "github.com/rddl-network/go-logger"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/rddl-network/rddl-claim-service/testutil"
 	"github.com/stretchr/testify/assert"
@@ -40,8 +41,9 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, 
 	shamirMock.EXPECT().IssueTransaction(gomock.Any(), gomock.Any()).AnyTimes().Return("0000000000000000000000000000000000000000000000000000000000000000", nil)
 
 	elements.Client = &elementsmocks.MockClient{}
+	logger := log.GetLogger(log.DEBUG)
 
-	app = service.NewRDDLClaimService(db, router, shamirMock)
+	app = service.NewRDDLClaimService(db, router, shamirMock, logger)
 	return
 }
 
