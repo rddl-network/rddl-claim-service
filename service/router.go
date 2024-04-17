@@ -1,6 +1,7 @@
 package service
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
@@ -49,7 +50,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 		return
 	}
 
-	hash, err := rcs.shamir.IssueTransaction(requestBody.Amount, requestBody.Beneficiary)
+	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, requestBody.Amount)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send tx"})
 		return
@@ -58,7 +59,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rc := RedeemClaim{
 		Beneficiary:  requestBody.Beneficiary,
 		Amount:       requestBody.Amount,
-		LiquidTXHash: hash,
+		LiquidTXHash: res.TxID,
 		ClaimID:      requestBody.ClaimID,
 	}
 
@@ -73,5 +74,5 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rcs.claims.list = append(rcs.claims.list, rc)
 	rcs.claims.mut.Unlock()
 
-	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": hash})
+	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": res.TxID})
 }

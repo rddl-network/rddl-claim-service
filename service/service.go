@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"sync"
 	"time"
 
@@ -11,16 +10,19 @@ import (
 	planetmint "github.com/planetmint/planetmint-go/lib"
 	daotypes "github.com/planetmint/planetmint-go/x/dao/types"
 	"github.com/rddl-network/rddl-claim-service/config"
+	"github.com/rddl-network/shamir-coordinator-service/client"
 	"github.com/syndtr/goleveldb/leveldb"
 
 	elements "github.com/rddl-network/elements-rpc"
+	log "github.com/rddl-network/go-logger"
 )
 
 type RDDLClaimService struct {
 	db     *leveldb.DB
 	router *gin.Engine
 	claims SafeClaims
-	shamir IShamirClient
+	shamir client.IShamirCoordinatorClient
+	logger log.AppLogger
 }
 
 type SafeClaims struct {
@@ -28,7 +30,7 @@ type SafeClaims struct {
 	list []RedeemClaim
 }
 
-func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir IShamirClient) *RDDLClaimService {
+func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir client.IShamirCoordinatorClient, logger log.AppLogger) *RDDLClaimService {
 	service := &RDDLClaimService{
 		db:     db,
 		router: router,
@@ -36,6 +38,7 @@ func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir IShamirClien
 			list: make([]RedeemClaim, 0),
 		},
 		shamir: shamir,
+		logger: logger,
 	}
 	service.registerRoutes()
 	return service
@@ -73,17 +76,17 @@ func (rcs *RDDLClaimService) pollConfirmations(waitPeriod int, confirmations int
 		for i, claim := range rcs.claims.list {
 			txConfirmations, err := getTxConfirmations(claim.LiquidTXHash)
 			if err != nil {
-				log.Println("error while fetching tx confirmations: ", err)
+				rcs.logger.Error("msg", "error while fetching tx confirmations: "+err.Error())
 			}
 			if txConfirmations >= confirmations {
 				rcs.claims.list = append(rcs.claims.list[:i], rcs.claims.list[i+1:]...)
 				err := sendConfirmation(claim.ClaimID, claim.Beneficiary)
 				if err != nil {
-					log.Println("error while sending claim confirmation: ", err)
+					rcs.logger.Error("msg", "error while sending claim confirmation: "+err.Error())
 				}
 				err = rcs.ConfirmClaim(claim.ID)
 				if err != nil {
-					log.Println("error while persisting claim confirmation: ", err)
+					rcs.logger.Error("msg", "error while persisting claim confirmation: "+err.Error())
 				}
 			}
 		}

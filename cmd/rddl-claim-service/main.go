@@ -3,8 +3,12 @@ package main
 import (
 	"bytes"
 	"html/template"
-	"log"
+	stdlog "log"
+	"net/http"
 	"os"
+
+	log "github.com/rddl-network/go-logger"
+	"github.com/rddl-network/shamir-coordinator-service/client"
 
 	"github.com/gin-gonic/gin"
 	"github.com/rddl-network/rddl-claim-service/config"
@@ -33,9 +37,10 @@ func loadConfig(path string) (cfg *config.Config, err error) {
 		cfg.WaitPeriod = v.GetInt("wait-period")
 		cfg.PlanetmintAddress = v.GetString("planetmint-address")
 		cfg.ShamirHost = v.GetString("shamir-host")
+		cfg.LogLevel = v.GetString("log-level")
 		return
 	}
-	log.Println("no config file found")
+	stdlog.Println("no config file found")
 
 	tmpl := template.New("appConfigFileTemplate")
 	configTemplate, err := tmpl.Parse(config.DefaultConfigTemplate)
@@ -55,7 +60,7 @@ func loadConfig(path string) (cfg *config.Config, err error) {
 		return
 	}
 
-	log.Println("default config file created. please adapt it and restart the application. exiting...")
+	stdlog.Println("default config file created. please adapt it and restart the application. exiting...")
 	os.Exit(0)
 	return
 }
@@ -63,25 +68,26 @@ func loadConfig(path string) (cfg *config.Config, err error) {
 func main() {
 	config, err := loadConfig("./")
 	if err != nil {
-		log.Fatalf("fatal error loading config file: %s", err)
+		stdlog.Fatalf("fatal error loading config file: %s", err)
 	}
 
 	db, err := service.InitDB(config)
 	if err != nil {
-		log.Fatal(err)
+		stdlog.Fatal(err)
 	}
 	defer db.Close()
 
 	router := gin.Default()
 
-	shamir := service.NewShamirClient(config.ShamirHost)
-	service := service.NewRDDLClaimService(db, router, shamir)
+	logger := log.GetLogger(config.LogLevel)
+	shamir := client.NewShamirCoordinatorClient(config.ShamirHost, &http.Client{})
+	service := service.NewRDDLClaimService(db, router, shamir, logger)
 
 	err = service.Load()
 	if err != nil {
-		log.Panicf("error loading claims: %s", err)
+		stdlog.Panicf("error loading claims: %s", err)
 	}
 	if err = service.Run(config); err != nil {
-		log.Panicf("error starting router: %s", err)
+		stdlog.Panicf("error starting router: %s", err)
 	}
 }
