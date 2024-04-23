@@ -54,6 +54,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 
 	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, requestBody.Amount)
 	if err != nil {
+		rcs.logger.Error("msg", "failed to send tx", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send tx"})
 		return
 	}
