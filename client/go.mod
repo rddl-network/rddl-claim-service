@@ -2,7 +2,7 @@ module github.com/rddl-network/rddl-claim-service/client
 
 go 1.21.5
 
-require github.com/rddl-network/rddl-claim-service v0.0.0-00010101000000-000000000000
+require github.com/rddl-network/rddl-claim-service v0.2.0
 
 require (
 	github.com/btcsuite/btcd v0.23.2 // indirect
