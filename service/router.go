@@ -11,12 +11,6 @@ import (
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
-type ClaimRequestBody struct {
-	Beneficiary string `binding:"required" json:"beneficiary"`
-	Amount      string `binding:"required" json:"amount"`
-	ClaimID     int    `binding:"required" json:"claim-id"`
-}
-
 func (rcs *RDDLClaimService) registerRoutes() {
 	rcs.router.POST("/claim", rcs.postClaim)
 	rcs.router.GET("/claim/:id", rcs.getClaim)
@@ -44,7 +38,7 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
-	var requestBody ClaimRequestBody
+	var requestBody PostClaimRequest
 	if err := c.BindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -78,5 +72,6 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rcs.claims.list = append(rcs.claims.list, rc)
 	rcs.claims.mut.Unlock()
 
+	// TODO: return PostClaimResponse
 	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": res.TxID})
 }
