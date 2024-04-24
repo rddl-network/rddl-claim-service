@@ -53,7 +53,7 @@ func TestPostClaim(t *testing.T) {
 	}
 
 	expectedRes := service.PostClaimResponse{
-		ID:   "ID",
+		ID:   1,
 		TxID: "liquidTXID",
 	}
 

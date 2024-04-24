@@ -34,7 +34,14 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, rc)
+	var resBody GetClaimResponse
+	resBody.ID = rc.ID
+	resBody.Beneficiary = rc.Beneficiary
+	resBody.LiquidTXHash = rc.LiquidTXHash
+	resBody.Amount = rc.Amount
+	resBody.ClaimID = rc.ClaimID
+
+	c.JSON(http.StatusOK, resBody)
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
@@ -72,6 +79,9 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rcs.claims.list = append(rcs.claims.list, rc)
 	rcs.claims.mut.Unlock()
 
-	// TODO: return PostClaimResponse
-	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": res.TxID})
+	var resBody PostClaimResponse
+	resBody.ID = id
+	resBody.TxID = res.TxID
+
+	c.JSON(http.StatusOK, resBody)
 }
