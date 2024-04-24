@@ -20,7 +20,7 @@ import (
 func createNRedeemClaim(app *service.RDDLClaimService, n int) []service.RedeemClaim {
 	items := make([]service.RedeemClaim, n)
 	for i := range items {
-		items[i].Amount = "10000.00000000"
+		items[i].Amount = 1000000000000
 		items[i].Beneficiary = fmt.Sprintf("liquidAddress%d", i)
 		items[i].LiquidTXHash = fmt.Sprintf("liquidTxHash%d", i)
 		items[i].ClaimID = i

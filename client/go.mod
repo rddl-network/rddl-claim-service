@@ -5,7 +5,11 @@ go 1.21.5
 require github.com/rddl-network/rddl-claim-service v0.0.0-00010101000000-000000000000
 
 require (
+	github.com/btcsuite/btcd v0.23.2 // indirect
+	github.com/btcsuite/btcd/btcutil v1.1.2 // indirect
+	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1 // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
+	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
 	github.com/rddl-network/bc-slip39-go v0.1.3 // indirect
 	github.com/rddl-network/go-logger v0.0.2 // indirect
 	github.com/rddl-network/shamir-coordinator-service v0.3.2 // indirect
@@ -16,6 +20,7 @@ require (
 	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
+	golang.org/x/sync v0.5.0 // indirect
 )
 
 require (
@@ -107,8 +112,8 @@ require (
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/petermattis/goid v0.0.0-20230317030725-371a4b8eda08 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
-	github.com/planetmint/planetmint-go v0.7.5-0.20240201092338-373614e1b27d // indirect
-	github.com/planetmint/planetmint-go/lib v0.4.1 // indirect
+	github.com/planetmint/planetmint-go v0.8.5 // indirect
+	github.com/planetmint/planetmint-go/lib v0.5.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect

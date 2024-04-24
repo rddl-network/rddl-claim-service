@@ -6,8 +6,8 @@ require (
 	github.com/cosmos/cosmos-sdk v0.47.5
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang/mock v1.6.0
-	github.com/planetmint/planetmint-go v0.7.5-0.20240201092338-373614e1b27d
-	github.com/planetmint/planetmint-go/lib v0.4.1
+	github.com/planetmint/planetmint-go v0.8.5
+	github.com/planetmint/planetmint-go/lib v0.5.0
 	github.com/rddl-network/elements-rpc v1.0.0
 	github.com/rddl-network/go-logger v0.0.2
 	github.com/rddl-network/shamir-coordinator-service v0.3.2
@@ -17,10 +17,15 @@ require (
 )
 
 require (
+	github.com/btcsuite/btcd v0.23.2 // indirect
+	github.com/btcsuite/btcd/btcutil v1.1.2 // indirect
+	github.com/btcsuite/btcd/chaincfg/chainhash v1.0.1 // indirect
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
+	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
 	github.com/rddl-network/bc-slip39-go v0.1.3 // indirect
 	github.com/rddl-network/shamir-shareholder-service v0.1.2 // indirect
 	github.com/rddl-network/shamir-shareholder-service/client v0.0.2 // indirect
+	golang.org/x/sync v0.5.0 // indirect
 )
 
 require (

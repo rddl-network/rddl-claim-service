@@ -21,7 +21,7 @@ func TestGetClaim(t *testing.T) {
 		res := service.GetClaimResponse{
 			ID:           1,
 			Beneficiary:  "beneficiary",
-			Amount:       "1.00000000",
+			Amount:       uint64(100000000),
 			LiquidTXHash: "liquidTXID",
 			ClaimID:      1,
 		}
@@ -38,7 +38,7 @@ func TestGetClaim(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, 1, res.ID)
 	assert.Equal(t, "beneficiary", res.Beneficiary)
-	assert.Equal(t, "1.00000000", res.Amount)
+	assert.Equal(t, uint64(100000000), res.Amount)
 	assert.Equal(t, "liquidTXID", res.LiquidTXHash)
 	assert.Equal(t, 1, res.ClaimID)
 }
@@ -49,7 +49,7 @@ func TestPostClaim(t *testing.T) {
 	req := service.PostClaimRequest{
 		ClaimID:     1,
 		Beneficiary: "beneficiary",
-		Amount:      "1.00000000",
+		Amount:      100000000,
 	}
 
 	expectedRes := service.PostClaimResponse{

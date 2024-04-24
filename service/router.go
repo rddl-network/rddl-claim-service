@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/planetmint/planetmint-go/util"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -53,7 +54,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 
 	rcs.logger.Info("msg", "received claim request", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 
-	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, requestBody.Amount)
+	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, util.UintValueToRDDLTokenString(requestBody.Amount))
 	if err != nil {
 		rcs.logger.Error("msg", "failed to send tx", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send tx"})

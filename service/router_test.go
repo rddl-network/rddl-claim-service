@@ -76,7 +76,7 @@ func TestPostClaimRoute(t *testing.T) {
 			name: "valid request",
 			reqBody: service.PostClaimRequest{
 				Beneficiary: "liquid-address",
-				Amount:      "10000.00000",
+				Amount:      1000000000000,
 				ClaimID:     1,
 			},
 			resBody: "{\"id\":1,\"tx-id\":\"0000000000000000000000000000000000000000000000000000000000000000\"}",
