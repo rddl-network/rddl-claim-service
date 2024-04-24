@@ -8,14 +8,9 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/planetmint/planetmint-go/util"
 	"github.com/syndtr/goleveldb/leveldb"
 )
-
-type ClaimRequestBody struct {
-	Beneficiary string `binding:"required" json:"beneficiary"`
-	Amount      string `binding:"required" json:"amount"`
-	ClaimID     int    `binding:"required" json:"claim-id"`
-}
 
 func (rcs *RDDLClaimService) registerRoutes() {
 	rcs.router.POST("/claim", rcs.postClaim)
@@ -40,11 +35,18 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, rc)
+	var resBody GetClaimResponse
+	resBody.ID = rc.ID
+	resBody.Beneficiary = rc.Beneficiary
+	resBody.LiquidTXHash = rc.LiquidTXHash
+	resBody.Amount = rc.Amount
+	resBody.ClaimID = rc.ClaimID
+
+	c.JSON(http.StatusOK, resBody)
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
-	var requestBody ClaimRequestBody
+	var requestBody PostClaimRequest
 	if err := c.BindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -52,7 +54,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 
 	rcs.logger.Info("msg", "received claim request", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 
-	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, requestBody.Amount)
+	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, util.UintValueToRDDLTokenString(requestBody.Amount))
 	if err != nil {
 		rcs.logger.Error("msg", "failed to send tx", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send tx"})
@@ -78,5 +80,9 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rcs.claims.list = append(rcs.claims.list, rc)
 	rcs.claims.mut.Unlock()
 
-	c.JSON(http.StatusOK, gin.H{"message": "claim enqueued", "id": id, "hash": res.TxID})
+	var resBody PostClaimResponse
+	resBody.ID = id
+	resBody.TxID = res.TxID
+
+	c.JSON(http.StatusOK, resBody)
 }

@@ -20,6 +20,7 @@ sequenceDiagram
     Planetmint->>Service: POST claim
     Service->>Liquid: SendToAddress
     Liquid-->>Service: TX hash
+    Service-->>Planetmint: TX hash
     loop every n seconds for all unconfirmed claims
         Service->>Liquid:  GetTransaction
         Liquid-->>Service: txDetails{confirmations: n}

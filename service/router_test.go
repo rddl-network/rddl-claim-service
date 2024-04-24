@@ -68,24 +68,24 @@ func TestPostClaimRoute(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		reqBody service.ClaimRequestBody
+		reqBody service.PostClaimRequest
 		resBody string
 		code    int
 	}{
 		{
 			name: "valid request",
-			reqBody: service.ClaimRequestBody{
+			reqBody: service.PostClaimRequest{
 				Beneficiary: "liquid-address",
-				Amount:      "10000.00000",
+				Amount:      1000000000000,
 				ClaimID:     1,
 			},
-			resBody: "{\"hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"id\":1,\"message\":\"claim enqueued\"}",
+			resBody: "{\"id\":1,\"tx-id\":\"0000000000000000000000000000000000000000000000000000000000000000\"}",
 			code:    200,
 		},
 		{
 			name:    "invalid request",
-			reqBody: service.ClaimRequestBody{},
-			resBody: "{\"error\":\"Key: 'ClaimRequestBody.Beneficiary' Error:Field validation for 'Beneficiary' failed on the 'required' tag\\nKey: 'ClaimRequestBody.Amount' Error:Field validation for 'Amount' failed on the 'required' tag\\nKey: 'ClaimRequestBody.ClaimID' Error:Field validation for 'ClaimID' failed on the 'required' tag\"}",
+			reqBody: service.PostClaimRequest{},
+			resBody: "{\"error\":\"Key: 'PostClaimRequest.Beneficiary' Error:Field validation for 'Beneficiary' failed on the 'required' tag\\nKey: 'PostClaimRequest.Amount' Error:Field validation for 'Amount' failed on the 'required' tag\\nKey: 'PostClaimRequest.ClaimID' Error:Field validation for 'ClaimID' failed on the 'required' tag\"}",
 			code:    400,
 		},
 	}

@@ -1,20 +1,8 @@
-module github.com/rddl-network/rddl-claim-service
+module github.com/rddl-network/rddl-claim-service/client
 
 go 1.21.5
 
-require (
-	github.com/cosmos/cosmos-sdk v0.47.5
-	github.com/gin-gonic/gin v1.9.1
-	github.com/golang/mock v1.6.0
-	github.com/planetmint/planetmint-go v0.8.5
-	github.com/planetmint/planetmint-go/lib v0.5.0
-	github.com/rddl-network/elements-rpc v1.0.0
-	github.com/rddl-network/go-logger v0.0.2
-	github.com/rddl-network/shamir-coordinator-service v0.3.2
-	github.com/spf13/viper v1.18.2
-	github.com/stretchr/testify v1.9.0
-	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d
-)
+require github.com/rddl-network/rddl-claim-service v0.0.0-00010101000000-000000000000
 
 require (
 	github.com/btcsuite/btcd v0.23.2 // indirect
@@ -23,8 +11,15 @@ require (
 	github.com/chenzhuoyu/iasm v0.9.1 // indirect
 	github.com/eclipse/paho.mqtt.golang v1.4.3 // indirect
 	github.com/rddl-network/bc-slip39-go v0.1.3 // indirect
+	github.com/rddl-network/go-logger v0.0.2 // indirect
+	github.com/rddl-network/shamir-coordinator-service v0.3.2 // indirect
+	github.com/rddl-network/shamir-coordinator-service/client v0.0.4 // indirect
 	github.com/rddl-network/shamir-shareholder-service v0.1.2 // indirect
 	github.com/rddl-network/shamir-shareholder-service/client v0.0.2 // indirect
+	github.com/sagikazarmark/locafero v0.4.0 // indirect
+	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
+	github.com/sourcegraph/conc v0.3.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 )
 
@@ -54,6 +49,7 @@ require (
 	github.com/confio/ics23/go v0.9.0 // indirect
 	github.com/cosmos/btcutil v1.0.5 // indirect
 	github.com/cosmos/cosmos-proto v1.0.0-beta.2 // indirect
+	github.com/cosmos/cosmos-sdk v0.47.5 // indirect
 	github.com/cosmos/go-bip39 v1.0.0 // indirect
 	github.com/cosmos/gogoproto v1.4.11 // indirect
 	github.com/cosmos/iavl v0.20.0 // indirect
@@ -70,6 +66,7 @@ require (
 	github.com/gabriel-vasile/mimetype v1.4.3 // indirect
 	github.com/getsentry/sentry-go v0.23.0 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
+	github.com/gin-gonic/gin v1.9.1 // indirect
 	github.com/go-kit/kit v0.12.0 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
 	github.com/go-logfmt/logfmt v0.6.0 // indirect
@@ -115,23 +112,25 @@ require (
 	github.com/pelletier/go-toml/v2 v2.1.1 // indirect
 	github.com/petermattis/goid v0.0.0-20230317030725-371a4b8eda08 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/planetmint/planetmint-go v0.8.5 // indirect
+	github.com/planetmint/planetmint-go/lib v0.5.0 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/prometheus/client_golang v1.14.0 // indirect
 	github.com/prometheus/client_model v0.3.0 // indirect
 	github.com/prometheus/common v0.42.0 // indirect
 	github.com/prometheus/procfs v0.9.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
-	github.com/rddl-network/shamir-coordinator-service/client v0.0.4
+	github.com/rddl-network/elements-rpc v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
-	github.com/sagikazarmark/locafero v0.4.0 // indirect
-	github.com/sagikazarmark/slog-shim v0.1.0 // indirect
 	github.com/sasha-s/go-deadlock v0.3.1 // indirect
-	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.11.0 // indirect
 	github.com/spf13/cast v1.6.0 // indirect
 	github.com/spf13/cobra v1.6.1 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/spf13/viper v1.18.2 // indirect
+	github.com/stretchr/testify v1.9.0
 	github.com/subosito/gotenv v1.6.0 // indirect
+	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d // indirect
 	github.com/tecbot/gorocksdb v0.0.0-20191217155057-f0fad39f321c // indirect
 	github.com/tendermint/go-amino v0.16.0 // indirect
 	github.com/tidwall/btree v1.6.0 // indirect
@@ -140,7 +139,6 @@ require (
 	github.com/zondax/hid v0.9.1 // indirect
 	github.com/zondax/ledger-go v0.14.1 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
-	go.uber.org/multierr v1.11.0 // indirect
 	golang.org/x/arch v0.7.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/exp v0.0.0-20240222234643-814bf88cf225 // indirect
@@ -159,3 +157,5 @@ require (
 	pgregory.net/rapid v0.5.5 // indirect
 	sigs.k8s.io/yaml v1.3.0 // indirect
 )
+
+replace github.com/rddl-network/rddl-claim-service => ../
