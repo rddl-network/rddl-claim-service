@@ -37,7 +37,7 @@ func (rcc *RCClient) GetClaim(ctx context.Context, id int) (res types.GetClaimRe
 }
 
 func (rcc *RCClient) PostClaim(ctx context.Context, req types.PostClaimRequest) (res types.PostClaimResponse, err error) {
-	err = rcc.doRequest(ctx, http.MethodPost, rcc.baseURL+"/claim", nil, &res)
+	err = rcc.doRequest(ctx, http.MethodPost, rcc.baseURL+"/claim", req, &res)
 	return
 }
 

@@ -81,12 +81,9 @@ func main() {
 
 	logger := log.GetLogger(config.LogLevel)
 	shamir := client.NewShamirCoordinatorClient(config.ShamirHost, &http.Client{})
-	service := service.NewRDDLClaimService(db, router, shamir, logger)
+	pmClient := service.NewPlanetmintClient()
+	service := service.NewRDDLClaimService(db, router, shamir, logger, pmClient)
 
-	err = service.Load()
-	if err != nil {
-		stdlog.Panicf("error loading claims: %s", err)
-	}
 	if err = service.Run(config); err != nil {
 		stdlog.Panicf("error starting router: %s", err)
 	}
