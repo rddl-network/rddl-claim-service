@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/rddl-network/rddl-claim-service/service"
+	"github.com/rddl-network/rddl-claim-service/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -68,13 +68,13 @@ func TestPostClaimRoute(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		reqBody service.PostClaimRequest
+		reqBody types.PostClaimRequest
 		resBody string
 		code    int
 	}{
 		{
 			name: "valid request",
-			reqBody: service.PostClaimRequest{
+			reqBody: types.PostClaimRequest{
 				Beneficiary: "liquid-address",
 				Amount:      1000000000000,
 				ClaimID:     1,
@@ -84,7 +84,7 @@ func TestPostClaimRoute(t *testing.T) {
 		},
 		{
 			name:    "invalid request",
-			reqBody: service.PostClaimRequest{},
+			reqBody: types.PostClaimRequest{},
 			resBody: "{\"error\":\"Key: 'PostClaimRequest.Beneficiary' Error:Field validation for 'Beneficiary' failed on the 'required' tag\\nKey: 'PostClaimRequest.Amount' Error:Field validation for 'Amount' failed on the 'required' tag\\nKey: 'PostClaimRequest.ClaimID' Error:Field validation for 'ClaimID' failed on the 'required' tag\"}",
 			code:    400,
 		},

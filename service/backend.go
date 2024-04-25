@@ -10,6 +10,14 @@ import (
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
 
+type RedeemClaim struct {
+	ID           int    `json:"id"`
+	Beneficiary  string `json:"beneficiary"`
+	Amount       uint64 `json:"amount"`
+	LiquidTXHash string `json:"liquid-tx-hash"`
+	ClaimID      int    `json:"claim-id"`
+}
+
 func InitDB(cfg *config.Config) (db *leveldb.DB, err error) {
 	return leveldb.OpenFile(cfg.DBPath, nil)
 }

@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/rddl-network/rddl-claim-service/service"
+	"github.com/rddl-network/rddl-claim-service/types"
 )
 
 type IRCClient interface {
-	GetClaim(ctx context.Context, id int) (res service.GetClaimResponse, err error)
-	PostClaim(ctx context.Context, req service.PostClaimRequest) (res service.PostClaimResponse, err error)
+	GetClaim(ctx context.Context, id int) (res types.GetClaimResponse, err error)
+	PostClaim(ctx context.Context, req types.PostClaimRequest) (res types.PostClaimResponse, err error)
 }
 
 type RCClient struct {
@@ -31,12 +31,12 @@ func NewRCClient(baseURL string, client *http.Client) *RCClient {
 	}
 }
 
-func (rcc *RCClient) GetClaim(ctx context.Context, id int) (res service.GetClaimResponse, err error) {
+func (rcc *RCClient) GetClaim(ctx context.Context, id int) (res types.GetClaimResponse, err error) {
 	err = rcc.doRequest(ctx, http.MethodGet, rcc.baseURL+"/claim/"+strconv.Itoa(id), nil, &res)
 	return
 }
 
-func (rcc *RCClient) PostClaim(ctx context.Context, req service.PostClaimRequest) (res service.PostClaimResponse, err error) {
+func (rcc *RCClient) PostClaim(ctx context.Context, req types.PostClaimRequest) (res types.PostClaimResponse, err error) {
 	err = rcc.doRequest(ctx, http.MethodPost, rcc.baseURL+"/claim", nil, &res)
 	return
 }
