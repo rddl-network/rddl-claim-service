@@ -10,6 +10,8 @@ import (
 	"github.com/rddl-network/shamir-coordinator-service/client"
 	"github.com/syndtr/goleveldb/leveldb"
 
+	stdlog "log"
+
 	elements "github.com/rddl-network/elements-rpc"
 	log "github.com/rddl-network/go-logger"
 )
@@ -40,9 +42,12 @@ func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir client.ISham
 	return service
 }
 
-func (rcs *RDDLClaimService) Run(cfg *config.Config) error {
+func (rcs *RDDLClaimService) Run(cfg *config.Config) {
 	go rcs.pollConfirmations(cfg.WaitPeriod, cfg.Confirmations)
-	return rcs.router.Run(fmt.Sprintf("%s:%d", cfg.ServiceHost, cfg.ServicePort))
+	err := rcs.router.Run(fmt.Sprintf("%s:%d", cfg.ServiceHost, cfg.ServicePort))
+	if err != nil {
+		stdlog.Panicf("error starting router: %s", err)
+	}
 }
 
 func (rcs *RDDLClaimService) pollConfirmations(waitPeriod int, confirmations int64) {

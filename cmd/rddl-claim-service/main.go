@@ -84,7 +84,5 @@ func main() {
 	pmClient := service.NewPlanetmintClient()
 	service := service.NewRDDLClaimService(db, router, shamir, logger, pmClient)
 
-	if err = service.Run(config); err != nil {
-		stdlog.Panicf("error starting router: %s", err)
-	}
+	service.Run(config)
 }

@@ -69,7 +69,7 @@ func TestIntegration(t *testing.T) {
 		TxHash: "0000000000000000000000000000000000000000000000000000000000000000",
 	}, nil)
 
-	// Start service seperate thread
+	// Start service separate thread
 	go app.Run(cfg)
 
 	// Send PostClaimRequest to service
@@ -98,11 +98,14 @@ func TestIntegration(t *testing.T) {
 	time.Sleep(2 * time.Second)
 
 	// Make sure unconfirmed claim is deleted
-	rc, err = app.GetUnconfirmedClaim(res.ID)
+	_, err = app.GetUnconfirmedClaim(res.ID)
 	assert.Error(t, err)
 	assert.Equal(t, leveldb.ErrNotFound, err)
 
 	// Make sure deleted unconfirmed claim is stored as confirmed claim
 	rc, err = app.GetConfirmedClaim(res.ID)
 	assert.NoError(t, err)
+	assert.Equal(t, reqBody.Amount, rc.Amount)
+	assert.Equal(t, reqBody.Beneficiary, rc.Beneficiary)
+	assert.Equal(t, res.TxID, rc.LiquidTXHash)
 }
