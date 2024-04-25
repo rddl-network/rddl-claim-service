@@ -13,7 +13,7 @@ import (
 
 type IRCClient interface {
 	GetClaim(ctx context.Context, id int) (res service.GetClaimResponse, err error)
-	PostClaim(ctx context.Context, plmntAddress string) (res service.PostClaimResponse, err error)
+	PostClaim(ctx context.Context, req service.PostClaimRequest) (res service.PostClaimResponse, err error)
 }
 
 type RCClient struct {
