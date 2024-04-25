@@ -19,7 +19,6 @@ import (
 type RDDLClaimService struct {
 	db       *leveldb.DB
 	router   *gin.Engine
-	claims   SafeClaims
 	shamir   client.IShamirCoordinatorClient
 	pmClient IPlanetmintClient
 	logger   log.AppLogger

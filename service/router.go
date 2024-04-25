@@ -77,10 +77,6 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 		return
 	}
 
-	rcs.claims.mut.Lock()
-	rcs.claims.list = append(rcs.claims.list, rc)
-	rcs.claims.mut.Unlock()
-
 	var resBody types.PostClaimResponse
 	resBody.ID = id
 	resBody.TxID = res.TxID
