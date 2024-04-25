@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/rddl-network/rddl-claim-service/client"
-	"github.com/rddl-network/rddl-claim-service/service"
+	"github.com/rddl-network/rddl-claim-service/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -18,7 +18,7 @@ func TestGetClaim(t *testing.T) {
 		assert.Equal(t, http.MethodGet, r.Method)
 		assert.Equal(t, "/claim/1", r.URL.Path)
 		w.WriteHeader(http.StatusOK)
-		res := service.GetClaimResponse{
+		res := types.GetClaimResponse{
 			ID:           1,
 			Beneficiary:  "beneficiary",
 			Amount:       uint64(100000000),
@@ -46,13 +46,13 @@ func TestGetClaim(t *testing.T) {
 func TestPostClaim(t *testing.T) {
 	t.Parallel()
 
-	req := service.PostClaimRequest{
+	req := types.PostClaimRequest{
 		ClaimID:     1,
 		Beneficiary: "beneficiary",
 		Amount:      100000000,
 	}
 
-	expectedRes := service.PostClaimResponse{
+	expectedRes := types.PostClaimResponse{
 		ID:   1,
 		TxID: "liquidTXID",
 	}

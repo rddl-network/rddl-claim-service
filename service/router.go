@@ -9,6 +9,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/planetmint/planetmint-go/util"
+	"github.com/rddl-network/rddl-claim-service/types"
 	"github.com/syndtr/goleveldb/leveldb"
 )
 
@@ -35,7 +36,7 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 		return
 	}
 
-	var resBody GetClaimResponse
+	var resBody types.GetClaimResponse
 	resBody.ID = rc.ID
 	resBody.Beneficiary = rc.Beneficiary
 	resBody.LiquidTXHash = rc.LiquidTXHash
@@ -46,7 +47,7 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
-	var requestBody PostClaimRequest
+	var requestBody types.PostClaimRequest
 	if err := c.BindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -80,7 +81,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	rcs.claims.list = append(rcs.claims.list, rc)
 	rcs.claims.mut.Unlock()
 
-	var resBody PostClaimResponse
+	var resBody types.PostClaimResponse
 	resBody.ID = id
 	resBody.TxID = res.TxID
 
