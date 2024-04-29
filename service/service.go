@@ -2,7 +2,6 @@ package service
 
 import (
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,11 +21,6 @@ type RDDLClaimService struct {
 	shamir   client.IShamirCoordinatorClient
 	pmClient IPlanetmintClient
 	logger   log.AppLogger
-}
-
-type SafeClaims struct {
-	mut  sync.Mutex
-	list []RedeemClaim
 }
 
 func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir client.IShamirCoordinatorClient, logger log.AppLogger, pmClient IPlanetmintClient) *RDDLClaimService {
