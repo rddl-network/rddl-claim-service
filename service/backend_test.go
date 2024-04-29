@@ -42,11 +42,12 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, 
 
 	mockRes := shamir.SendTokensResponse{TxID: "0000000000000000000000000000000000000000000000000000000000000000"}
 	shamirMock.EXPECT().SendTokens(gomock.Any(), gomock.Any(), gomock.Any()).AnyTimes().Return(mockRes, nil)
+	pmMock := testutil.NewMockIPlanetmintClient(ctrl)
 
 	elements.Client = &elementsmocks.MockClient{}
 	logger := log.GetLogger(log.DEBUG)
 
-	app = service.NewRDDLClaimService(db, router, shamirMock, logger)
+	app = service.NewRDDLClaimService(db, router, shamirMock, logger, pmMock)
 	return
 }
 
