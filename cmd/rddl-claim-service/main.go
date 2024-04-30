@@ -4,13 +4,13 @@ import (
 	"bytes"
 	"html/template"
 	stdlog "log"
-	"net/http"
 	"os"
 
 	log "github.com/rddl-network/go-utils/logger"
 	"github.com/rddl-network/shamir-coordinator-service/client"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rddl-network/go-utils/tls"
 	"github.com/rddl-network/rddl-claim-service/config"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/spf13/viper"
@@ -98,7 +98,11 @@ func main() {
 	router := gin.Default()
 
 	logger := log.GetLogger(config.LogLevel)
-	shamir := client.NewShamirCoordinatorClient(config.ShamirHost, &http.Client{})
+	mTLSClient, err := tls.Get2WayTLSClient(config.CertsPath)
+	if err != nil {
+		stdlog.Fatalf("fatal error setting up mutual TLS shareholder client")
+	}
+	shamir := client.NewShamirCoordinatorClient(config.ShamirHost, mTLSClient)
 	pmClient := service.NewPlanetmintClient()
 	service := service.NewRDDLClaimService(db, router, shamir, logger, pmClient)
 
