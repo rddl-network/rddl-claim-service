@@ -18,6 +18,7 @@ wallet="{{ .Wallet }}"
 confirmations={{ .Confirmations }}
 wait-period={{ .WaitPeriod }}
 planetmint-address="{{ .PlanetmintAddress }}"
+planetmint-chain-id="{{ .PlanetmintChainID }}"
 shamir-host="{{ .ShamirHost }}"
 log-level="{{ .LogLevel }}"
 `
@@ -34,6 +35,7 @@ type Config struct {
 	Confirmations     int64  `mapstructure:"confirmations"`
 	WaitPeriod        int    `mapstructure:"wait-period"`
 	PlanetmintAddress string `mapstructure:"planetmint-address"`
+	PlanetmintChainID string `mapstructure:"planetmint-chain-id"`
 	ShamirHost        string `mapstructure:"shamir-host"`
 	LogLevel          string `mapstructure:"log-level"`
 }
@@ -58,6 +60,7 @@ func DefaultConfig() *Config {
 		Confirmations:     10,
 		WaitPeriod:        10,
 		PlanetmintAddress: "plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5",
+		PlanetmintChainID: "planetmint-testnet-1",
 		ShamirHost:        "http://localhost:9091",
 		LogLevel:          log.DEBUG,
 	}

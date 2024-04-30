@@ -2,7 +2,7 @@ package service
 
 import (
 	sdk "github.com/cosmos/cosmos-sdk/types"
-	planetmint "github.com/planetmint/planetmint-go/lib"
+	"github.com/planetmint/planetmint-go/lib"
 	daotypes "github.com/planetmint/planetmint-go/x/dao/types"
 	"github.com/rddl-network/rddl-claim-service/config"
 )
@@ -23,10 +23,10 @@ func (pc *PlanetmintClient) SendConfirmation(claimID int, beneficiary string) (t
 	addr := sdk.MustAccAddressFromBech32(addressString)
 	msg := daotypes.NewMsgConfirmRedeemClaim(addressString, uint64(claimID), beneficiary)
 
-	out, err := planetmint.BroadcastTxWithFileLock(addr, msg)
+	out, err := lib.BroadcastTxWithFileLock(addr, msg)
 	if err != nil {
 		return
 	}
 
-	return planetmint.GetTxResponseFromOut(out)
+	return lib.GetTxResponseFromOut(out)
 }

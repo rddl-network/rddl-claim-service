@@ -14,7 +14,12 @@ import (
 	"github.com/rddl-network/rddl-claim-service/config"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/spf13/viper"
+
+	"github.com/planetmint/planetmint-go/app"
+	"github.com/planetmint/planetmint-go/lib"
 )
+
+var libConfig *lib.Config
 
 func loadConfig(path string) (cfg *config.Config, err error) {
 	v := viper.New()
@@ -36,6 +41,7 @@ func loadConfig(path string) (cfg *config.Config, err error) {
 		cfg.Confirmations = v.GetInt64("confirmations")
 		cfg.WaitPeriod = v.GetInt("wait-period")
 		cfg.PlanetmintAddress = v.GetString("planetmint-address")
+		cfg.PlanetmintChainID = v.GetString("planetmint-chain-id")
 		cfg.ShamirHost = v.GetString("shamir-host")
 		cfg.LogLevel = v.GetString("log-level")
 		return
@@ -70,6 +76,17 @@ func main() {
 	if err != nil {
 		stdlog.Fatalf("fatal error loading config file: %s", err)
 	}
+
+	encodingConfig := app.MakeEncodingConfig()
+
+	libConfig = lib.GetConfig()
+	libConfig.SetEncodingConfig(encodingConfig)
+
+	planetmintChainID := config.PlanetmintChainID
+	if planetmintChainID == "" {
+		stdlog.Fatalf("chain id must not be empty")
+	}
+	libConfig.SetChainID(planetmintChainID)
 
 	db, err := service.InitDB(config)
 	if err != nil {

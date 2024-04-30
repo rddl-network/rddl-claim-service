@@ -59,16 +59,18 @@ func (rcs *RDDLClaimService) pollConfirmations(waitPeriod int, confirmations int
 			}
 			rcs.logger.Debug("msg", "fetchted liquid confirmations", "TxID", claim.LiquidTXHash, "confirmations", txConfirmations)
 			if txConfirmations >= confirmations {
-				rcs.logger.Info("msg", "sufficient confirmations reached, removing from polling list", "TxID", claim.LiquidTXHash)
+				rcs.logger.Info("msg", "sufficient confirmations reached, sending confirmation", "TxID", claim.LiquidTXHash)
+				txResponse, err := rcs.pmClient.SendConfirmation(claim.ClaimID, claim.Beneficiary)
+				if err != nil {
+					rcs.logger.Error("msg", "error while sending claim confirmation: "+err.Error())
+					// Skip persisting confirmation in case of failure
+					continue
+				}
+				rcs.logger.Info("msg", "claim confirmation sent to Planetmint", "txResponse", txResponse.String())
 				err = rcs.ConfirmClaim(claim.ID)
 				if err != nil {
 					rcs.logger.Error("msg", "error while persisting claim confirmation: "+err.Error())
 				}
-				txResponse, err := rcs.pmClient.SendConfirmation(claim.ClaimID, claim.Beneficiary)
-				if err != nil {
-					rcs.logger.Error("msg", "error while sending claim confirmation: "+err.Error())
-				}
-				rcs.logger.Info("msg", "claim confirmation sent to Planetmint", "txResponse", txResponse.String())
 			}
 		}
 	}
