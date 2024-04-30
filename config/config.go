@@ -9,6 +9,7 @@ import (
 const DefaultConfigTemplate = `
 service-host="{{ .ServiceHost }}"
 service-port={{ .ServicePort }}
+certs-path="{{ .CertsPath }}"
 db-path="{{ .DBPath }}"
 rpc-host="{{ .RPCHost }}"
 rpc-user="{{ .RPCUser }}"
@@ -26,6 +27,7 @@ log-level="{{ .LogLevel }}"
 type Config struct {
 	ServicePort       int    `mapstructure:"service-port"`
 	ServiceHost       string `mapstructure:"service-host"`
+	CertsPath         string `mapstructure:"certs-path"`
 	DBPath            string `mapstructure:"db-path"`
 	RPCHost           string `mapstructure:"rpc-host"`
 	RPCUser           string `mapstructure:"rpc-user"`
@@ -51,6 +53,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		ServicePort:       8080,
 		ServiceHost:       "localhost",
+		CertsPath:         "./certs/",
 		DBPath:            "./data",
 		RPCHost:           "planetmint-go-testnet-3.rddl.io:18884",
 		RPCUser:           "user",

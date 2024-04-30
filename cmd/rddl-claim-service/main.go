@@ -32,6 +32,7 @@ func loadConfig(path string) (cfg *config.Config, err error) {
 		cfg = config.GetConfig()
 		cfg.ServicePort = v.GetInt("service-port")
 		cfg.ServiceHost = v.GetString("service-host")
+		cfg.CertsPath = v.GetString("certs-path")
 		cfg.DBPath = v.GetString("db-path")
 		cfg.RPCHost = v.GetString("rpc-host")
 		cfg.RPCUser = v.GetString("rpc-user")
