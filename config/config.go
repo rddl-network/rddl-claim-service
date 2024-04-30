@@ -61,7 +61,7 @@ func DefaultConfig() *Config {
 		WaitPeriod:        10,
 		PlanetmintAddress: "plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5",
 		PlanetmintChainID: "planetmint-testnet-1",
-		ShamirHost:        "http://localhost:9091",
+		ShamirHost:        "https://localhost:9091",
 		LogLevel:          log.DEBUG,
 	}
 }
