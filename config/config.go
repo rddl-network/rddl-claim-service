@@ -3,7 +3,7 @@ package config
 import (
 	"sync"
 
-	log "github.com/rddl-network/go-logger"
+	log "github.com/rddl-network/go-utils/logger"
 )
 
 const DefaultConfigTemplate = `

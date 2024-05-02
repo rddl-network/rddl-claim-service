@@ -9,9 +9,9 @@ require (
 	github.com/planetmint/planetmint-go v0.8.5
 	github.com/planetmint/planetmint-go/lib v0.5.0
 	github.com/rddl-network/elements-rpc v1.0.0
-	github.com/rddl-network/go-logger v0.0.2
-	github.com/rddl-network/shamir-coordinator-service v0.3.4
-	github.com/rddl-network/shamir-coordinator-service/client v0.0.5
+	github.com/rddl-network/go-utils v0.0.3
+	github.com/rddl-network/shamir-coordinator-service v0.3.5
+	github.com/rddl-network/shamir-coordinator-service/client v0.0.6
 	github.com/spf13/viper v1.16.0
 	github.com/stretchr/testify v1.9.0
 	github.com/syndtr/goleveldb v1.0.1-0.20220721030215-126854af5e6d
@@ -158,8 +158,8 @@ require (
 	github.com/rakyll/statik v0.1.7 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rddl-network/bc-slip39-go v0.1.3 // indirect
-	github.com/rddl-network/shamir-shareholder-service v0.1.4 // indirect
-	github.com/rddl-network/shamir-shareholder-service/client v0.0.2 // indirect
+	github.com/rddl-network/shamir-shareholder-service v0.1.5 // indirect
+	github.com/rddl-network/shamir-shareholder-service/client v0.0.4 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/rs/cors v1.8.3 // indirect
 	github.com/rs/zerolog v1.30.0 // indirect

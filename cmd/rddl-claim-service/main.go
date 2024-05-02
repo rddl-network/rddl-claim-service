@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"os"
 
-	log "github.com/rddl-network/go-logger"
+	log "github.com/rddl-network/go-utils/logger"
 	"github.com/rddl-network/shamir-coordinator-service/client"
 
 	"github.com/gin-gonic/gin"
