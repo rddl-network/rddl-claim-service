@@ -128,7 +128,7 @@ func TestPostClaimRouteMissingClaimID(t *testing.T) {
 
 	w := httptest.NewRecorder()
 	bodyStr := "{\"beneficiary\":\"liquid-address\",\"amount\":1000000000000}"
-	req, _ := http.NewRequestWithContext(context.Background(), http.MethodPost, "/claim", bytes.NewBuffer([]byte(bodyStr)))
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodPost, "/claim", bytes.NewBufferString(bodyStr))
 	router.ServeHTTP(w, req)
 	assert.Equal(t, 400, w.Code)
 	assert.Equal(t, "{\"error\":\"missing claim-id\"}", w.Body.String())

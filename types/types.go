@@ -3,7 +3,7 @@ package types
 type PostClaimRequest struct {
 	Beneficiary string `binding:"required" json:"beneficiary"`
 	Amount      uint64 `binding:"required" json:"amount"`
-	ClaimID     int    `binding:"gte=0" json:"claim-id"`
+	ClaimID     int    `binding:"gte=0"    json:"claim-id"`
 }
 
 type PostClaimResponse struct {
