@@ -4,8 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/planetmint/planetmint-go/util"
@@ -53,6 +55,11 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 		return
 	}
 
+	// manual validation if claim-id is set on requestBody
+	if err := checkClaimIDSet(c); err != nil {
+		return
+	}
+
 	rcs.logger.Info("msg", "received claim request", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 
 	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, util.UintValueToRDDLTokenString(requestBody.Amount))
@@ -82,4 +89,25 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	resBody.TxID = res.TxID
 
 	c.JSON(http.StatusOK, resBody)
+}
+
+func checkClaimIDSet(c *gin.Context) (err error) {
+	body, err := c.Request.GetBody()
+	if err != nil {
+		body.Close()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+	defer body.Close()
+
+	bytes, err := io.ReadAll(body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return err
+	}
+	if !strings.Contains(string(bytes), "claim-id") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "missing claim-id"})
+		return errors.New("missing claim-id")
+	}
+	return
 }
