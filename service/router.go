@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -49,6 +50,14 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
+	// Read and buffer the body for multiple uses
+	bodyBytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read request body"})
+		return
+	}
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	var requestBody types.PostClaimRequest
 	if err := c.BindJSON(&requestBody); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -56,7 +65,8 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	}
 
 	// manual validation if claim-id is set on requestBody
-	if err := checkClaimIDSet(c); err != nil {
+	if err := checkClaimIDSet(bodyBytes); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -91,22 +101,8 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	c.JSON(http.StatusOK, resBody)
 }
 
-func checkClaimIDSet(c *gin.Context) (err error) {
-	body, err := c.Request.GetBody()
-	if err != nil {
-		body.Close()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return err
-	}
-	defer body.Close()
-
-	bytes, err := io.ReadAll(body)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return err
-	}
-	if !strings.Contains(string(bytes), "claim-id") {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "missing claim-id"})
+func checkClaimIDSet(bodyBytes []byte) (err error) {
+	if !strings.Contains(string(bodyBytes), "claim-id") {
 		return errors.New("missing claim-id")
 	}
 	return
