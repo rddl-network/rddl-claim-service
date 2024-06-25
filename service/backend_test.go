@@ -8,8 +8,10 @@ import (
 	"github.com/golang/mock/gomock"
 	elements "github.com/rddl-network/elements-rpc"
 	elementsmocks "github.com/rddl-network/elements-rpc/utils/mocks"
+	log "github.com/rddl-network/go-utils/logger"
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/rddl-network/rddl-claim-service/testutil"
+	shamir "github.com/rddl-network/shamir-coordinator-service/service"
 	"github.com/stretchr/testify/assert"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/storage"
@@ -18,7 +20,7 @@ import (
 func createNRedeemClaim(app *service.RDDLClaimService, n int) []service.RedeemClaim {
 	items := make([]service.RedeemClaim, n)
 	for i := range items {
-		items[i].Amount = "10000.00000000"
+		items[i].Amount = 1000000000000
 		items[i].Beneficiary = fmt.Sprintf("liquidAddress%d", i)
 		items[i].LiquidTXHash = fmt.Sprintf("liquidTxHash%d", i)
 		items[i].ClaimID = i
@@ -36,12 +38,16 @@ func setupService(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, 
 	router = gin.Default()
 
 	ctrl := gomock.NewController(t)
-	shamirMock := testutil.NewMockIShamirClient(ctrl)
-	shamirMock.EXPECT().IssueTransaction(gomock.Any(), gomock.Any()).AnyTimes().Return("0000000000000000000000000000000000000000000000000000000000000000", nil)
+	shamirMock := testutil.NewMockIShamirCoordinatorClient(ctrl)
+
+	mockRes := shamir.SendTokensResponse{TxID: "0000000000000000000000000000000000000000000000000000000000000000"}
+	shamirMock.EXPECT().SendTokens(gomock.Any(), gomock.Any(), gomock.Any()).AnyTimes().Return(mockRes, nil)
+	pmMock := testutil.NewMockIPlanetmintClient(ctrl)
 
 	elements.Client = &elementsmocks.MockClient{}
+	logger := log.GetLogger(log.DEBUG)
 
-	app = service.NewRDDLClaimService(db, router, shamirMock)
+	app = service.NewRDDLClaimService(db, router, shamirMock, logger, pmMock)
 	return
 }
 

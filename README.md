@@ -20,6 +20,7 @@ sequenceDiagram
     Planetmint->>Service: POST claim
     Service->>Liquid: SendToAddress
     Liquid-->>Service: TX hash
+    Service-->>Planetmint: TX hash
     loop every n seconds for all unconfirmed claims
         Service->>Liquid:  GetTransaction
         Liquid-->>Service: txDetails{confirmations: n}
@@ -38,17 +39,21 @@ go run cmd/rddl-claim-service/main.go
 ## Configuration
 The service needs to be configured via the ```./app.toml``` file or environment variables. The defaults are
 ```
-service-port = 8080
-service-host = "localhost"
-db-path = "./data"
-rpc-host = "localhost:18884"
-rpc-user = "user"
-rpc-pass = "password"
-asset = "7add40beb27df701e02ee85089c5bc0021bc813823fedb5f1dcb5debda7f3da9"
-wallet = "pop"
+asset = '7add40beb27df701e02ee85089c5bc0021bc813823fedb5f1dcb5debda7f3da9'
+certs-path = './certs/'
 confirmations = 10
+db-path = './data'
+log-level = 'debug'
+planetmint-address = 'plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5'
+planetmint-chain-id = 'planetmint-testnet-1'
+rpc-host = 'planetmint-go-testnet-3.rddl.io:18884'
+rpc-pass = 'password'
+rpc-user = 'user'
+service-host = 'localhost'
+service-port = 8080
+shamir-host = 'https://localhost:9091'
 wait-period = 10
-planetmint-address = "plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5"
+wallet = 'pop'
 ```
 
 **Important:** The `planetmint-address` needs to be the `ClaimAddress` configured on Planetmint in order to pass the `AnteHandler` check.

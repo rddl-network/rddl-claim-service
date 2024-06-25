@@ -1,10 +1,15 @@
 package config
 
-import "sync"
+import (
+	"sync"
+
+	log "github.com/rddl-network/go-utils/logger"
+)
 
 const DefaultConfigTemplate = `
 service-host="{{ .ServiceHost }}"
 service-port={{ .ServicePort }}
+certs-path="{{ .CertsPath }}"
 db-path="{{ .DBPath }}"
 rpc-host="{{ .RPCHost }}"
 rpc-user="{{ .RPCUser }}"
@@ -14,12 +19,15 @@ wallet="{{ .Wallet }}"
 confirmations={{ .Confirmations }}
 wait-period={{ .WaitPeriod }}
 planetmint-address="{{ .PlanetmintAddress }}"
+planetmint-chain-id="{{ .PlanetmintChainID }}"
 shamir-host="{{ .ShamirHost }}"
+log-level="{{ .LogLevel }}"
 `
 
 type Config struct {
 	ServicePort       int    `mapstructure:"service-port"`
 	ServiceHost       string `mapstructure:"service-host"`
+	CertsPath         string `mapstructure:"certs-path"`
 	DBPath            string `mapstructure:"db-path"`
 	RPCHost           string `mapstructure:"rpc-host"`
 	RPCUser           string `mapstructure:"rpc-user"`
@@ -29,7 +37,9 @@ type Config struct {
 	Confirmations     int64  `mapstructure:"confirmations"`
 	WaitPeriod        int    `mapstructure:"wait-period"`
 	PlanetmintAddress string `mapstructure:"planetmint-address"`
-	ShamirHost        string
+	PlanetmintChainID string `mapstructure:"planetmint-chain-id"`
+	ShamirHost        string `mapstructure:"shamir-host"`
+	LogLevel          string `mapstructure:"log-level"`
 }
 
 // global singleton
@@ -43,6 +53,7 @@ func DefaultConfig() *Config {
 	return &Config{
 		ServicePort:       8080,
 		ServiceHost:       "localhost",
+		CertsPath:         "./certs/",
 		DBPath:            "./data",
 		RPCHost:           "planetmint-go-testnet-3.rddl.io:18884",
 		RPCUser:           "user",
@@ -52,7 +63,9 @@ func DefaultConfig() *Config {
 		Confirmations:     10,
 		WaitPeriod:        10,
 		PlanetmintAddress: "plmnt15xuq0yfxtd70l7jzr5hg722sxzcqqdcr8ptpl5",
-		ShamirHost:        "localhost:9091",
+		PlanetmintChainID: "planetmint-testnet-1",
+		ShamirHost:        "https://localhost:9091",
+		LogLevel:          log.DEBUG,
 	}
 }
 

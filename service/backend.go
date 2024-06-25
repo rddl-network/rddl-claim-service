@@ -4,11 +4,22 @@ import (
 	"encoding/json"
 	"errors"
 	"strconv"
+	"sync"
 
 	"github.com/rddl-network/rddl-claim-service/config"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/util"
 )
+
+var dbMutex sync.Mutex
+
+type RedeemClaim struct {
+	ID           int    `json:"id"`
+	Beneficiary  string `json:"beneficiary"`
+	Amount       uint64 `json:"amount"`
+	LiquidTXHash string `json:"liquid-tx-hash"`
+	ClaimID      int    `json:"claim-id"`
+}
 
 func InitDB(cfg *config.Config) (db *leveldb.DB, err error) {
 	return leveldb.OpenFile(cfg.DBPath, nil)
@@ -30,6 +41,8 @@ func (rcs *RDDLClaimService) incrementCount() (count int, err error) {
 		count++
 	}
 
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
 	err = rcs.db.Put(KeyPrefix(CountKey), []byte(strconv.Itoa(count)), nil)
 	if err != nil {
 		return 0, err
@@ -77,6 +90,8 @@ func (rcs *RDDLClaimService) CreateUnconfirmedClaim(rc RedeemClaim) (id int, err
 		return 0, err
 	}
 
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
 	if err := rcs.db.Put(key, val, nil); err != nil {
 		return 0, err
 	}
@@ -86,6 +101,8 @@ func (rcs *RDDLClaimService) CreateUnconfirmedClaim(rc RedeemClaim) (id int, err
 
 func (rcs *RDDLClaimService) DeleteUnconfirmedClaim(id int) (err error) {
 	key := ClaimKey(id)
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
 	return rcs.db.Delete(key, nil)
 }
 
@@ -106,6 +123,8 @@ func (rcs *RDDLClaimService) ConfirmClaim(id int) (err error) {
 		return
 	}
 
+	dbMutex.Lock()
+	defer dbMutex.Unlock()
 	return rcs.db.Put(key, val, nil)
 }
 

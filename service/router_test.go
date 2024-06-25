@@ -8,7 +8,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/rddl-network/rddl-claim-service/service"
+	"github.com/rddl-network/rddl-claim-service/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -68,25 +68,45 @@ func TestPostClaimRoute(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		reqBody service.ClaimRequestBody
+		reqBody types.PostClaimRequest
 		resBody string
 		code    int
 	}{
 		{
 			name: "valid request",
-			reqBody: service.ClaimRequestBody{
+			reqBody: types.PostClaimRequest{
 				Beneficiary: "liquid-address",
-				Amount:      "10000.00000",
+				Amount:      1000000000000,
 				ClaimID:     1,
 			},
-			resBody: "{\"hash\":\"0000000000000000000000000000000000000000000000000000000000000000\",\"id\":1,\"message\":\"claim enqueued\"}",
+			resBody: "{\"id\":1,\"tx-id\":\"0000000000000000000000000000000000000000000000000000000000000000\"}",
 			code:    200,
 		},
 		{
 			name:    "invalid request",
-			reqBody: service.ClaimRequestBody{},
-			resBody: "{\"error\":\"Key: 'ClaimRequestBody.Beneficiary' Error:Field validation for 'Beneficiary' failed on the 'required' tag\\nKey: 'ClaimRequestBody.Amount' Error:Field validation for 'Amount' failed on the 'required' tag\\nKey: 'ClaimRequestBody.ClaimID' Error:Field validation for 'ClaimID' failed on the 'required' tag\"}",
+			reqBody: types.PostClaimRequest{},
+			resBody: "{\"error\":\"Key: 'PostClaimRequest.Beneficiary' Error:Field validation for 'Beneficiary' failed on the 'required' tag\\nKey: 'PostClaimRequest.Amount' Error:Field validation for 'Amount' failed on the 'required' tag\"}",
 			code:    400,
+		},
+		{
+			name: "invalid request claim id lt 0",
+			reqBody: types.PostClaimRequest{
+				Beneficiary: "liquid-address",
+				Amount:      100000000,
+				ClaimID:     -1,
+			},
+			resBody: "{\"error\":\"Key: 'PostClaimRequest.ClaimID' Error:Field validation for 'ClaimID' failed on the 'gte' tag\"}",
+			code:    400,
+		},
+		{
+			name: "valid request accept 0 as claim id",
+			reqBody: types.PostClaimRequest{
+				Beneficiary: "liquid-address",
+				Amount:      100000000,
+				ClaimID:     0,
+			},
+			resBody: "{\"id\":2,\"tx-id\":\"0000000000000000000000000000000000000000000000000000000000000000\"}",
+			code:    200,
 		},
 	}
 	for _, tc := range tests {
@@ -101,4 +121,15 @@ func TestPostClaimRoute(t *testing.T) {
 			assert.Equal(t, tc.resBody, w.Body.String())
 		})
 	}
+}
+
+func TestPostClaimRouteMissingClaimID(t *testing.T) {
+	_, _, router := setupService(t)
+
+	w := httptest.NewRecorder()
+	bodyStr := "{\"beneficiary\":\"liquid-address\",\"amount\":1000000000000}"
+	req, _ := http.NewRequestWithContext(context.Background(), http.MethodPost, "/claim", bytes.NewBufferString(bodyStr))
+	router.ServeHTTP(w, req)
+	assert.Equal(t, 400, w.Code)
+	assert.Equal(t, "{\"error\":\"missing claim-id\"}", w.Body.String())
 }
