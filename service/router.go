@@ -1,11 +1,14 @@
 package service
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/planetmint/planetmint-go/util"
@@ -47,8 +50,22 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
+	// Read and buffer the body for multiple uses
+	bodyBytes, err := io.ReadAll(c.Request.Body)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to read request body"})
+		return
+	}
+	c.Request.Body = io.NopCloser(bytes.NewBuffer(bodyBytes))
+
 	var requestBody types.PostClaimRequest
 	if err := c.BindJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// manual validation if claim-id is set on requestBody
+	if err := checkClaimIDSet(bodyBytes); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -82,4 +99,11 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 	resBody.TxID = res.TxID
 
 	c.JSON(http.StatusOK, resBody)
+}
+
+func checkClaimIDSet(bodyBytes []byte) (err error) {
+	if !strings.Contains(string(bodyBytes), "claim-id") {
+		return errors.New("missing claim-id")
+	}
+	return
 }
