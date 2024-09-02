@@ -9,7 +9,7 @@ require (
 	github.com/planetmint/planetmint-go v0.8.5
 	github.com/planetmint/planetmint-go/lib v0.5.0
 	github.com/rddl-network/elements-rpc v1.0.0
-	github.com/rddl-network/go-utils v0.1.1
+	github.com/rddl-network/go-utils v0.2.2
 	github.com/rddl-network/shamir-coordinator-service v0.3.5
 	github.com/rddl-network/shamir-coordinator-service/client v0.0.6
 	github.com/spf13/viper v1.16.0
