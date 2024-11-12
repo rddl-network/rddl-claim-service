@@ -1,15 +1,15 @@
 module github.com/rddl-network/rddl-claim-service
 
-go 1.21.5
+go 1.22
 
 require (
 	github.com/cosmos/cosmos-sdk v0.47.8
 	github.com/gin-gonic/gin v1.9.1
 	github.com/golang/mock v1.6.0
-	github.com/planetmint/planetmint-go v0.8.5
-	github.com/planetmint/planetmint-go/lib v0.5.0
-	github.com/rddl-network/elements-rpc v1.0.0
-	github.com/rddl-network/go-utils v0.2.2
+	github.com/planetmint/planetmint-go v0.12.3
+	github.com/planetmint/planetmint-go/lib v0.6.0
+	github.com/rddl-network/elements-rpc v1.2.1
+	github.com/rddl-network/go-utils v0.2.3
 	github.com/rddl-network/shamir-coordinator-service v0.3.5
 	github.com/rddl-network/shamir-coordinator-service/client v0.0.6
 	github.com/spf13/viper v1.16.0
@@ -69,6 +69,7 @@ require (
 	github.com/cosmos/ledger-cosmos-go v0.12.4 // indirect
 	github.com/cosmos/rosetta-sdk-go v0.10.0 // indirect
 	github.com/creachadair/taskgroup v0.4.2 // indirect
+	github.com/creack/goselect v0.1.2 // indirect
 	github.com/danieljoos/wincred v1.1.2 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
@@ -180,6 +181,7 @@ require (
 	github.com/ulikunitz/xz v0.5.11 // indirect
 	github.com/zondax/hid v0.9.2 // indirect
 	github.com/zondax/ledger-go v0.14.3 // indirect
+	go.bug.st/serial v1.6.2 // indirect
 	go.etcd.io/bbolt v1.3.7 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/otel v1.19.0 // indirect
