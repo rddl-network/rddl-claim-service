@@ -48,7 +48,6 @@ func TestGetClaimRoute(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequestWithContext(context.Background(), http.MethodGet, "/claim/"+tc.id, nil)
@@ -110,7 +109,6 @@ func TestPostClaimRoute(t *testing.T) {
 		},
 	}
 	for _, tc := range tests {
-		tc := tc
 		t.Run(tc.name, func(t *testing.T) {
 			w := httptest.NewRecorder()
 			bodyBytes, err := json.Marshal(tc.reqBody)
