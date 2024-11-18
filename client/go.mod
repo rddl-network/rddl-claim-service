@@ -1,6 +1,6 @@
 module github.com/rddl-network/rddl-claim-service/client
 
-go 1.21.5
+go 1.22
 
 require (
 	github.com/rddl-network/rddl-claim-service v0.2.0
