@@ -1,6 +1,6 @@
 module github.com/rddl-network/rddl-claim-service
 
-go 1.21.5
+go 1.22
 
 require (
 	github.com/cosmos/cosmos-sdk v0.47.8
