@@ -18,12 +18,12 @@ import (
 type RDDLClaimService struct {
 	db       *leveldb.DB
 	router   *gin.Engine
-	shamir   client.IShamirCoordinatorClient
+	shamir   client.ISCClient
 	pmClient IPlanetmintClient
 	logger   log.AppLogger
 }
 
-func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir client.IShamirCoordinatorClient, logger log.AppLogger, pmClient IPlanetmintClient) *RDDLClaimService {
+func NewRDDLClaimService(db *leveldb.DB, router *gin.Engine, shamir client.ISCClient, logger log.AppLogger, pmClient IPlanetmintClient) *RDDLClaimService {
 	service := &RDDLClaimService{
 		db:       db,
 		router:   router,

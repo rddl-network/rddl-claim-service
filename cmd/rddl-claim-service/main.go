@@ -102,7 +102,7 @@ func main() {
 	if err != nil {
 		stdlog.Fatalf("fatal error setting up mutual TLS shareholder client")
 	}
-	shamir := client.NewShamirCoordinatorClient(config.ShamirHost, mTLSClient)
+	shamir := client.NewSCClient(config.ShamirHost, mTLSClient)
 	pmClient := service.NewPlanetmintClient()
 	service := service.NewRDDLClaimService(db, router, shamir, logger, pmClient)
 
