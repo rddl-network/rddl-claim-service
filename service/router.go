@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/planetmint/planetmint-go/util"
+	"github.com/rddl-network/rddl-claim-service/config"
 	"github.com/rddl-network/rddl-claim-service/types"
 	"github.com/syndtr/goleveldb/leveldb"
 )
@@ -50,6 +51,8 @@ func (rcs *RDDLClaimService) getClaim(c *gin.Context) {
 }
 
 func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
+	cfg := config.GetConfig()
+
 	// Read and buffer the body for multiple uses
 	bodyBytes, err := io.ReadAll(c.Request.Body)
 	if err != nil {
@@ -72,7 +75,7 @@ func (rcs *RDDLClaimService) postClaim(c *gin.Context) {
 
 	rcs.logger.Info("msg", "received claim request", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 
-	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, util.UintValueToRDDLTokenString(requestBody.Amount))
+	res, err := rcs.shamir.SendTokens(context.Background(), requestBody.Beneficiary, util.UintValueToRDDLTokenString(requestBody.Amount), cfg.Asset)
 	if err != nil {
 		rcs.logger.Error("msg", "failed to send tx", "beneficiary", requestBody.Beneficiary, "amount", requestBody.Amount)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to send tx"})

@@ -20,7 +20,7 @@ import (
 	"github.com/rddl-network/rddl-claim-service/service"
 	"github.com/rddl-network/rddl-claim-service/testutil"
 	"github.com/rddl-network/rddl-claim-service/types"
-	shamir "github.com/rddl-network/shamir-coordinator-service/service"
+	shamir "github.com/rddl-network/shamir-coordinator-service/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/syndtr/goleveldb/leveldb"
 	"github.com/syndtr/goleveldb/leveldb/storage"
@@ -28,7 +28,7 @@ import (
 
 var (
 	pmMock     *testutil.MockIPlanetmintClient
-	shamirMock *testutil.MockIShamirCoordinatorClient
+	shamirMock *testutil.MockISCClient
 )
 
 func setupServiceWithMocks(t *testing.T) (app *service.RDDLClaimService, db *leveldb.DB, router *gin.Engine) {
@@ -38,7 +38,7 @@ func setupServiceWithMocks(t *testing.T) (app *service.RDDLClaimService, db *lev
 	}
 	router = gin.Default()
 	ctrl := gomock.NewController(t)
-	shamirMock = testutil.NewMockIShamirCoordinatorClient(ctrl)
+	shamirMock = testutil.NewMockISCClient(ctrl)
 	pmMock = testutil.NewMockIPlanetmintClient(ctrl)
 	elements.Client = &elementsmocks.MockClient{}
 	logger := log.GetLogger(log.DEBUG)
@@ -62,7 +62,7 @@ func TestIntegration(t *testing.T) {
 
 	// ShamirCoordinator.SendTokens should be called exactly once with reqBody.Amount{1000000000000} converted to "10000.00000000" liquid float
 	mockRes := shamir.SendTokensResponse{TxID: "0000000000000000000000000000000000000000000000000000000000000000"}
-	shamirMock.EXPECT().SendTokens(gomock.Any(), gomock.Any(), "10000.00000000").Times(1).Return(mockRes, nil)
+	shamirMock.EXPECT().SendTokens(gomock.Any(), gomock.Any(), "10000.00000000", gomock.Any()).Times(1).Return(mockRes, nil)
 
 	// Planetmint Confirmations shall be sent exactly once with reqBody.ClaimID{1} and reqBody.Beneficiary{"address"}
 	pmMock.EXPECT().SendConfirmation(reqBody.ClaimID, reqBody.Beneficiary).Times(1).Return(sdk.TxResponse{
