@@ -36,6 +36,24 @@ The service can be executed via the following go command without having it previ
 go run cmd/rddl-claim-service/main.go
 ```
 
+## Backup export utility
+This repository contains a reusable utility that reads the LevelDB backup/data folder and exports claims to a Markdown table.
+
+Run it with:
+```
+go run ./cmd/rddl-backup-export -db data -out data/backup_export.md
+```
+
+Available flags:
+- `-db`: path to the LevelDB directory (default: `data`)
+- `-out`: output path for the generated Markdown file (default: `data/backup_export.md`)
+
+The generated file contains:
+- a summary with count and claim totals
+- an `Unconfirmed Claims` table
+- a `Confirmed Claims` table
+- an optional `Unknown Or Decode Errors` section
+
 ## Configuration
 The service needs to be configured via the ```./app.toml``` file or environment variables. The defaults are
 ```
